@@ -3,6 +3,8 @@
 #include "Scene.h"
 
 
+#include <vector>
+
 class BattleScene :	public Scene
 {
 public:
@@ -13,6 +15,7 @@ public:
 	// Initialisation
 	bool Init();
 	void CleanUp();
+	Scene* transition();
 	
 	// Main Scene loop
 	void HandleInput();
@@ -22,8 +25,8 @@ public:
 
 private:
 
-
-
+	std::vector<sf::Texture*> tests;
+	sf::Sprite* loadingSprite;
 
 };
 
