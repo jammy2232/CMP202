@@ -17,7 +17,7 @@ public:
 	Scene* transition();
 
 	// Main Scene loop
-	void HandleInput();
+	void HandleInput(float delta_time);
 	void Update(float delta_time);
 	void Render(sf::RenderWindow& window);
 	void RenderUI(sf::RenderWindow& window);

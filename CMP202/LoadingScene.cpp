@@ -121,7 +121,7 @@ Scene * LoadingScene::transition()
 }
 
 
-void LoadingScene::HandleInput()
+void LoadingScene::HandleInput(float delta_time)
 {
 
 	// Not Required

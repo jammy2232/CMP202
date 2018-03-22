@@ -95,7 +95,7 @@ int main()
 		}
 
 		// Update wrap the scene
-		current->HandleInput();
+		current->HandleInput(deltaTime);
 		current->Update(deltaTime);
 
 		// Clear the current window

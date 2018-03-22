@@ -20,7 +20,7 @@ public:
 	virtual Scene* transition() = 0;
 
 	// Main Scene loop
-	virtual void HandleInput() = 0;
+	virtual void HandleInput(float delta_time) = 0;
 	virtual void Update(float delta_time) = 0;
 	virtual void Render(sf::RenderWindow& window) = 0;
 	virtual void RenderUI(sf::RenderWindow& window) = 0;
