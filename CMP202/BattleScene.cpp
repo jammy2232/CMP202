@@ -30,14 +30,14 @@ bool BattleScene::Init()
 		return false;
 	}
 
-	// Randomly Generate a map
-	for (int i = 0; i < 10000; i++)
-	{
-		renderMap_.push_back(100 + rand()%2);
-	}
+	// Create a map to display
+	TileMapGenerator();
 
 	// Setup the view windows for main and minimaps
 	SetUpViewWindows();
+
+	// Start the pathfinder
+	pathfinder = new PathFinder(tileMapStatus_);
 
 	// Flag that the initailsation has been complete
 	loaded = true;
@@ -49,6 +49,9 @@ bool BattleScene::Init()
 
 void BattleScene::CleanUp()
 {
+
+	delete pathfinder;
+	pathfinder = nullptr;
 
 	unloaded = true;
 
@@ -91,7 +94,7 @@ void BattleScene::Update(float delta_time)
 {
 
 	// 
-
+	PathFinder::RequestPath(&test, Coordsi(), Coordsi(MAPDIMENSIONS-1, MAPDIMENSIONS-1));
 
 }
 
@@ -107,12 +110,12 @@ void BattleScene::Render(sf::RenderWindow & window)
 
 	// Render Units
 
-	for (int x = 0; x < 100; x++)
+	for (int y = 0; y < MAPDIMENSIONS; y++)
 	{
-		for (int y = 0; y < 100; y++)
+		for (int x = 0; x < MAPDIMENSIONS; x++)
 		{
-			sprites_[renderMap_[y * 100 + x]].setPosition(x * 64, y * 64);
-			window.draw(sprites_[renderMap_[y * 100 + x]]);
+			sprites_[renderMap_[y * MAPDIMENSIONS + x]].setPosition(x * TILESIZE, y * TILESIZE);
+			window.draw(sprites_[renderMap_[y * MAPDIMENSIONS + x]]);
 		}
 	}
 
@@ -124,12 +127,12 @@ void BattleScene::Render(sf::RenderWindow & window)
 	// Render Map BackGround
 
 	// test
-	for (int x = 0; x < 100; x++)
+	for (int y = 0; y < MAPDIMENSIONS; y++)
 	{
-		for (int y = 0; y < 100; y++)
+		for (int x = 0; x < MAPDIMENSIONS; x++)
 		{
-			sprites_[renderMap_[y * 100 + x]].setPosition(x * 64, y * 64);
-			window.draw(sprites_[renderMap_[y * 100 + x]]);
+			sprites_[renderMap_[y * MAPDIMENSIONS + x]].setPosition(x * TILESIZE, y * TILESIZE);
+			window.draw(sprites_[renderMap_[y * MAPDIMENSIONS + x]]);
 		}
 	}
 
@@ -149,8 +152,8 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
 	// This is the fixed tile size of the ground tiles
-	const int tilesize = 64.0f;
-	const int mapSize_dimensions = 100;
+	const int tilesize = TILESIZE;
+	const int mapSize_dimensions = MAPDIMENSIONS;
 	int viewsize = tilesize * mapSize_dimensions;
 
 	// Create the current camera position outline
@@ -266,13 +269,96 @@ void BattleScene::SetUpViewWindows()
 	// MiniMap
 
 	// This is the fixed tile size of the ground tiles
-	const int tilesize = 64.0f;
-	const int mapSize_dimensions = 100;
+	const int tilesize = TILESIZE;
+	const int mapSize_dimensions = MAPDIMENSIONS;
 	int viewsize = tilesize * (mapSize_dimensions + 2); // 2 accounts for the border
 
 	// restict the view port to the bottom left of the screen with a border
 	miniMap_View.setSize(viewsize, viewsize);
 	miniMap_View.setCenter(viewsize / 2.0f, viewsize / 2.0f);
 	miniMap_View.setViewport(sf::FloatRect(0.74, 0.74, 0.24, 0.24));
+
+}
+
+
+void BattleScene::TileMapGenerator()
+{
+
+	// Create a square map with Random Grass textures
+	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS); i++)
+	{
+
+		// Get a random texture (2 possible 100 or 101)
+		int randomGrassTextureId = 100 + rand() % 2;
+		// Store this in the map location 
+		renderMap_.push_back(randomGrassTextureId);
+		// Assume all tiles are walkable
+		tileMapStatus_.push_back(true);
+
+	}
+
+	// Add random trees and foliage on 10% of the map
+	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS * 0.1f); i++)
+	{
+
+		// Get a Random Tile ID
+		int randomTileId_x = rand() % MAPDIMENSIONS;
+		int randomTileId_y = rand() % MAPDIMENSIONS;
+
+		// Get a random Tree tile 85 to 92 on the sprite sheet
+		int randomTreeTile = 85 + rand() % 7;
+
+		// Store this in the map location 
+		renderMap_[randomTileId_y * MAPDIMENSIONS + randomTileId_x] = randomTreeTile;
+		// Areas are not walkable
+		tileMapStatus_[randomTileId_y * MAPDIMENSIONS + randomTileId_x] = false;
+
+	}
+
+	// Add a river down the middle with a crossing point
+	for (int y = 0; y < (MAPDIMENSIONS); y++)
+	{
+
+		for (int x = 0; x < (MAPDIMENSIONS); x++)
+		{
+
+			// Check if you create Sand
+			if (x == MAPDIMENSIONS * 9 / 20 || x == MAPDIMENSIONS * 11 / 20)
+			{
+				if (y > MAPDIMENSIONS * 9 / 20 && y < MAPDIMENSIONS * 11 / 20)
+				{
+					// Place Bridge
+					renderMap_[y * MAPDIMENSIONS + x] = 57;
+				}
+				else
+				{
+					// Place Beach
+					renderMap_[y * MAPDIMENSIONS + x] = 45;
+					// Areas are not walkable
+					tileMapStatus_[y * MAPDIMENSIONS + x] = true;
+				}
+			}
+
+			// Check if you create Water
+			if (x > MAPDIMENSIONS * 9 / 20 && x < MAPDIMENSIONS * 11 / 20)
+			{
+				if (y > MAPDIMENSIONS * 9 / 20 && y < MAPDIMENSIONS * 11 / 20)
+				{
+					// Place Bridge
+					renderMap_[y * MAPDIMENSIONS + x] = 57;
+				}
+				else
+				{
+					// Place Water
+					renderMap_[y * MAPDIMENSIONS + x] = 71;
+					// Areas are not walkable
+					tileMapStatus_[y * MAPDIMENSIONS + x] = false;
+				}
+
+			}
+
+		}
+
+	}
 
 }

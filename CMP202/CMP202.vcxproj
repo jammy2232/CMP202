@@ -152,17 +152,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AiState.cpp" />
     <ClCompile Include="BattleScene.cpp" />
+    <ClCompile Include="Coordsf.cpp" />
+    <ClCompile Include="Coordsi.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Units.cpp" />
+    <ClCompile Include="Semaphor.cpp" />
+    <ClCompile Include="Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AiState.h" />
     <ClInclude Include="BattleScene.h" />
+    <ClInclude Include="Coordsf.h" />
+    <ClInclude Include="Coordsi.h" />
+    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Units.h" />
+    <ClInclude Include="Semaphor.h" />
+    <ClInclude Include="Unit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,7 +11,9 @@
 #include <fstream>
 
 // Battle Gameplay
-#include "Units.h"
+#include "Unit.h"
+#include "GameSettings.h"
+#include "PathFinder.h"
 
 class BattleScene :	public Scene
 {
@@ -41,7 +43,7 @@ private:
 	std::vector<int> renderMap_;
 
 	// Data for Rendering and Calculation
-	std::vector<Units> units_;
+	std::vector<Unit> units_;
 
 	// Data for Pathfinding
 	// storing the locations that units are currently blocking
@@ -52,6 +54,14 @@ private:
 	// Loading and preperation functions
 	bool LoadSpriteSheet();
 	void SetUpViewWindows();
+	void TileMapGenerator();
+
+	// Systems
+	PathFinder* pathfinder;
+
+
+	//test
+	Unit test;
 
 };
 

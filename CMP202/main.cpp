@@ -13,6 +13,9 @@
 int main()
 {
 
+	// Seed the random number generator
+	srand(time(NULL));
+
 	// get the current desktop
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
