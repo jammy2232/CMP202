@@ -230,7 +230,7 @@ void PathFinder::Reset()
 	{
 
 		// Reset the tiles
-		if (!baseTileMap_[i])
+		if (baseTileMap_[i])
 			cellMap_[i].state = Cell::BASIC;
 		else
 			cellMap_[i].state = Cell::BLOCKED;

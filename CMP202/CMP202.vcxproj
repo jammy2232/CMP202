@@ -156,10 +156,13 @@
     <ClCompile Include="BattleScene.cpp" />
     <ClCompile Include="Coordsf.cpp" />
     <ClCompile Include="Coordsi.cpp" />
+    <ClCompile Include="Fighting.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Moving.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SearchAndDestoy.cpp" />
     <ClCompile Include="Semaphor.cpp" />
     <ClCompile Include="Unit.cpp" />
   </ItemGroup>
@@ -168,10 +171,13 @@
     <ClInclude Include="BattleScene.h" />
     <ClInclude Include="Coordsf.h" />
     <ClInclude Include="Coordsi.h" />
+    <ClInclude Include="Fighting.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="Moving.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SearchAndDestoy.h" />
     <ClInclude Include="Semaphor.h" />
     <ClInclude Include="Unit.h" />
   </ItemGroup>

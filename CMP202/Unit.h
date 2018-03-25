@@ -6,6 +6,7 @@
 #include <mutex>
 #include "Coordsf.h"
 #include "Coordsi.h"
+#include "GameSettings.h"
 
 class Unit
 {
@@ -17,14 +18,18 @@ public:
 	void Update();
 	void ChangeState(AiState* newState);
 
-	// Getters and Setters
+	// Getters and Setters (All Thread Safe)
 	void SetPath(std::list<Coordsi> path);
+	Coordsi GetDestination();
+
 
 private:
 
-	// Ai Control
+	// Rendering informaiton 
 	int spriteId_;
 	Coordsf currentPosition;
+
+	// AI Coontrol Information 
 	Coordsi currentTile;
 	std::list<Coordsi> path_;
 	AiState* currentState_;
@@ -32,6 +37,7 @@ private:
 	// AI Stats
 	int health;
 	int attack;
+	static float speed;
 	Unit* Opponent;
 
 	// ThreadSafety

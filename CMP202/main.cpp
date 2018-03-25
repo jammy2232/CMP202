@@ -39,6 +39,9 @@ int main()
 	// Assign the loading scene as the current scene 
 	current = (Scene*)loading;
 
+	// Reference to the Ai manager system
+	AiState::SetSceneToControl(&battle);
+
 	// This clock object is required to determine the delta time
 	sf::Clock clock;
 	float deltaTime;

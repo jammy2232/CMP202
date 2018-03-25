@@ -13,69 +13,111 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Pathfinding">
+      <UniqueIdentifier>{c2f59dee-6302-483a-88ff-01283e928019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pathfinding">
+      <UniqueIdentifier>{e31a08d8-c59b-42d4-b5a4-6f36a9b20a5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper">
+      <UniqueIdentifier>{c1480b30-c517-4c57-a6b6-45ba6deacab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helper">
+      <UniqueIdentifier>{71068397-a955-4355-9f64-e95a7b0f5351}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scenes">
+      <UniqueIdentifier>{e1210f42-47f7-43ed-8bdd-34b075f216fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scenes">
+      <UniqueIdentifier>{131c84b4-de6d-4760-b29a-6203ac35ff7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AIUnits">
+      <UniqueIdentifier>{cd10a743-fb45-4e97-8d9c-5e6185876b2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AIUnits">
+      <UniqueIdentifier>{f2c3cbd1-dde6-4565-9f57-25f9295220a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BattleScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LoadingScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PathFinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AiState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Unit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Semaphor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Pathfinding</Filter>
     </ClCompile>
     <ClCompile Include="Coordsf.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helper</Filter>
     </ClCompile>
     <ClCompile Include="Coordsi.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Semaphor.cpp">
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadingScene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="AiState.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="SearchAndDestoy.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Fighting.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Moving.cpp">
+      <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BattleScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LoadingScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PathFinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AiState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Unit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Semaphor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PathFinder.h">
+      <Filter>Header Files\Pathfinding</Filter>
+    </ClInclude>
     <ClInclude Include="Coordsf.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helper</Filter>
     </ClInclude>
     <ClInclude Include="Coordsi.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Semaphor.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="AiState.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchAndDestoy.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Fighting.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Moving.h">
+      <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
