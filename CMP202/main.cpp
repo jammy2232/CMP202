@@ -9,6 +9,10 @@
 // Application includes
 #include "LoadingScene.h"
 #include "BattleScene.h"
+#include "Moving.h"
+#include "LookAround.h"
+#include "SearchAndDestoy.h"
+#include "Fighting.h"
 
 int main()
 {
@@ -40,7 +44,13 @@ int main()
 	current = (Scene*)loading;
 
 	// Reference to the Ai manager system
-	AiState::SetSceneToControl(&battle);
+	AiState::SetSceneToControl(battle);
+
+	// Create copies of all the state objects
+	Moving::stateInstance = new Moving();
+	LookAround::stateInstance = new LookAround();
+	SearchAndDestoy::stateInstance = new SearchAndDestoy();
+	Fighting::stateInstance = new Fighting();
 
 	// This clock object is required to determine the delta time
 	sf::Clock clock;

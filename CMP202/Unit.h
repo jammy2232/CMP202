@@ -8,6 +8,10 @@
 #include "Coordsi.h"
 #include "GameSettings.h"
 
+class AiState;
+
+enum TEAM { BLUE, RED };
+
 class Unit
 {
 public:
@@ -15,25 +19,21 @@ public:
 	Unit();
 	~Unit();
 
-	void Update();
+	void Update(float dt);
 	void ChangeState(AiState* newState);
 
 	// Getters and Setters (All Thread Safe)
 	void SetPath(std::list<Coordsi> path);
 	Coordsi GetDestination();
-
-
-private:
+	void UpdateDestination();
+	bool wait;
 
 	// Rendering informaiton 
 	int spriteId_;
 	Coordsf currentPosition;
-
-	// AI Coontrol Information 
+	Coordsf forwardDirection;
 	Coordsi currentTile;
-	std::list<Coordsi> path_;
-	AiState* currentState_;
-
+	
 	// AI Stats
 	int health;
 	int attack;
@@ -42,6 +42,13 @@ private:
 
 	// ThreadSafety
 	std::mutex path_lock;
+
+private:
+
+
+	// AI Coontrol Information 
+	std::list<Coordsi> path_;
+	AiState* currentState_;
 
 };
 

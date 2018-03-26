@@ -158,6 +158,7 @@
     <ClCompile Include="Coordsi.cpp" />
     <ClCompile Include="Fighting.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
+    <ClCompile Include="LookAround.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Moving.cpp" />
     <ClCompile Include="PathFinder.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Fighting.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="LookAround.h" />
     <ClInclude Include="Moving.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Scene.h" />

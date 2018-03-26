@@ -15,6 +15,10 @@
 #include "GameSettings.h"
 #include "PathFinder.h"
 
+class PathFinder;
+class Unit;
+enum TEAM;
+
 class BattleScene :	public Scene
 {
 public:
@@ -33,6 +37,11 @@ public:
 	void Render(sf::RenderWindow& window);
 	void RenderUI(sf::RenderWindow& window);
 
+	// Ai interaction
+	bool CheckIfTileIsOccupied(Coordsi request);
+	void SetTileOccupancy(Coordsi request, bool occupancy);
+	Unit* CheckForUnit(Coordsi location, int range, TEAM team);
+
 private:
 
 	// reference to graphics objects
@@ -43,7 +52,7 @@ private:
 	std::vector<int> renderMap_;
 
 	// Data for Rendering and Calculation
-	std::vector<Unit> units_;
+	std::vector<Unit*> units_;
 
 	// Data for Pathfinding
 	// storing the locations that units are currently blocking
@@ -56,12 +65,11 @@ private:
 	void SetUpViewWindows();
 	void TileMapGenerator();
 
+	// Thread safe functions 
+	std::mutex currentMapStatusLock_;
+
 	// Systems
 	PathFinder* pathfinder;
-
-
-	//test
-	Unit test;
 
 };
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include "BattleScene.h"
 
+class BattleScene;
+
 class AiState
 {
 public:
@@ -11,12 +13,10 @@ public:
 	~AiState();
 
 	virtual void Enter(Unit* unit) = 0;
-	virtual void Step(Unit* unit) = 0;
+	virtual void Step(Unit* unit, float dt) = 0;
 	virtual void Exit(Unit* unit) = 0;
 
 	static void SetSceneToControl(BattleScene* scene) { battleSceneReference = scene; }
-
-
 
 protected:
 

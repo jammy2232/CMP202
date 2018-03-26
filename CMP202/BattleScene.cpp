@@ -1,5 +1,6 @@
 #include "BattleScene.h"
 
+#include "Moving.h"
 
 BattleScene::BattleScene()
 {
@@ -41,6 +42,32 @@ bool BattleScene::Init()
 
 	// Flag that the initailsation has been complete
 	loaded = true;
+
+	// Spawn Units
+	for (int i = 0; i < 200; i++)
+	{
+
+		Unit* newUnit = new Unit();
+		Coordsi coordinates;
+
+		do
+		{
+			coordinates = Coordsi(rand() % (MAPDIMENSIONS - 1), rand() % (MAPDIMENSIONS - 1));
+			newUnit->currentTile = coordinates;
+			newUnit->currentPosition = Coordsf(newUnit->currentTile.x * TILESIZE, newUnit->currentTile.y * TILESIZE);
+		} while (!tileMapStatus_[coordinates.y * MAPDIMENSIONS + coordinates.x]);
+
+		SetTileOccupancy(newUnit->currentTile, true);
+		units_.push_back(newUnit);
+
+	}
+	
+	// Calculate the paths
+	for (auto unit : units_)
+	{
+		PathFinder::RequestPath(unit, Coordsi(), Coordsi(MAPDIMENSIONS - 1, MAPDIMENSIONS - 1));
+		unit->ChangeState(Moving::stateInstance);
+	}
 
 	// return to show error free;
 	return true;
@@ -93,8 +120,12 @@ void BattleScene::HandleInput(float delta_time)
 void BattleScene::Update(float delta_time)
 {
 
-	// 
-	PathFinder::RequestPath(&test, Coordsi(), Coordsi(MAPDIMENSIONS-1, MAPDIMENSIONS-1));
+	// update all the units
+	for (auto unit : units_)
+	{
+		std::unique_lock<std::mutex> lock(unit->path_lock);
+	 	unit->Update(delta_time);
+	}
 
 }
 
@@ -119,6 +150,12 @@ void BattleScene::Render(sf::RenderWindow & window)
 		}
 	}
 
+	for (auto unit : units_)
+	{
+		sprites_[unit->spriteId_].setPosition(unit->currentPosition.x, unit->currentPosition.y);
+		window.draw(sprites_[unit->spriteId_]);
+	}
+
 
 	//Minimap render function ***********************
 
@@ -134,6 +171,12 @@ void BattleScene::Render(sf::RenderWindow & window)
 			sprites_[renderMap_[y * MAPDIMENSIONS + x]].setPosition(x * TILESIZE, y * TILESIZE);
 			window.draw(sprites_[renderMap_[y * MAPDIMENSIONS + x]]);
 		}
+	}
+
+	for (auto unit : units_)
+	{
+		sprites_[unit->spriteId_].setPosition(unit->currentPosition.x, unit->currentPosition.y);
+		window.draw(sprites_[unit->spriteId_]);
 	}
 
 }
@@ -284,6 +327,12 @@ void BattleScene::SetUpViewWindows()
 void BattleScene::TileMapGenerator()
 {
 
+	// Create a tile occupancy map
+	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS); i++)
+	{
+		currentMapStatus_.push_back(false);
+	}
+
 	// Create a square map with Random Grass textures
 	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS); i++)
 	{
@@ -360,5 +409,49 @@ void BattleScene::TileMapGenerator()
 		}
 
 	}
+
+}
+
+
+bool BattleScene::CheckIfTileIsOccupied(Coordsi request)
+{
+
+	std::unique_lock<std::mutex> lock(currentMapStatusLock_);
+	return currentMapStatus_[request.y * MAPDIMENSIONS + request.x];
+
+}
+
+
+void BattleScene::SetTileOccupancy(Coordsi request, bool occupancy)
+{
+
+	std::unique_lock<std::mutex> lock(currentMapStatusLock_);
+	currentMapStatus_[request.y * MAPDIMENSIONS + request.x] = occupancy;
+
+}
+
+
+Unit * BattleScene::CheckForUnit(Coordsi location, int range, TEAM team)
+{
+	/*
+	float minDistance;
+
+	// Check in the radius around the unit looking
+	for (int y = (location.y - range); y < (location.y + range); y++)
+	{
+		for (int x = (location.x - range); x < (location.x + range); x++)
+		{
+
+
+
+
+		}
+	}
+
+
+	*/
+
+	// No units exist
+	return nullptr;
 
 }

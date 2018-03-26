@@ -11,8 +11,10 @@ public:
 	~SearchAndDestoy();
 
 	void Enter(Unit* unit);
-	void Step(Unit* unit);
+	void Step(Unit* unit, float dt);
 	void Exit(Unit* unit);
+
+	static SearchAndDestoy* stateInstance;
 
 private:
 

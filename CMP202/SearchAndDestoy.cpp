@@ -1,6 +1,8 @@
 #include "SearchAndDestoy.h"
 
 
+SearchAndDestoy* SearchAndDestoy::stateInstance = nullptr;
+
 SearchAndDestoy::SearchAndDestoy()
 {
 }
@@ -16,7 +18,7 @@ void SearchAndDestoy::Enter(Unit* unit)
 }
 
 
-void SearchAndDestoy::Step(Unit* unit)
+void SearchAndDestoy::Step(Unit* unit, float dt)
 {
 }
 

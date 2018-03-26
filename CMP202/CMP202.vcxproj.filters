@@ -78,11 +78,11 @@
     <ClCompile Include="Moving.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
+    <ClCompile Include="LookAround.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PathFinder.h">
       <Filter>Header Files\Pathfinding</Filter>
     </ClInclude>
@@ -118,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="Moving.h">
       <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="LookAround.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

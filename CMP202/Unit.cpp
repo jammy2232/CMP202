@@ -2,12 +2,13 @@
 
 float Unit::speed = UNITSPEED;
 
-
 Unit::Unit()
 {
 
-	int health = UNITHEALTH;
-	int attack = UNITATTACK;
+	health = UNITHEALTH;
+	attack = UNITATTACK;
+	wait = false;
+	spriteId_ = 103;
 
 }
 
@@ -17,10 +18,10 @@ Unit::~Unit()
 }
 
 
-void Unit::Update()
+void Unit::Update(float dt)
 {
-
-	currentState_->Step(this);
+	if (currentState_)
+		currentState_->Step(this, dt);
 
 }
 
@@ -29,7 +30,8 @@ void Unit::ChangeState(AiState * newState)
 {
 
 	// Exit the old
-	currentState_->Exit(this);
+	if(currentState_)
+		currentState_->Exit(this);
 
 	// Set the new
 	currentState_ = newState;
@@ -56,5 +58,16 @@ Coordsi Unit::GetDestination()
 	
 	// Get the next path desitnation 
 	return path_.front();
+
+}
+
+void Unit::UpdateDestination()
+{
+
+	// Lock the path to be updated
+	std::unique_lock<std::mutex> Set(path_lock);
+
+	// Get the next path desitnation 
+	path_.pop_front();
 
 }

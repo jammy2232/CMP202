@@ -1,20 +1,23 @@
 #pragma once
 #include "AiState.h"
 
-class Moving :
-	public AiState
+// Other states 
+#include "LookAround.h"
+class LookAround;
+
+class Moving : public AiState
 {
+
 public:
+
 	Moving();
 	~Moving();
 
 	void Enter(Unit* unit);
-	void Step(Unit* unit);
+	void Step(Unit* unit, float dt);
 	void Exit(Unit* unit);
 
-private:
-
-
+	static Moving* stateInstance;
 
 };
 
