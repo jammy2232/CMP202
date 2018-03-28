@@ -22,33 +22,36 @@ public:
 	void Update(float dt);
 	void ChangeState(AiState* newState);
 
-	// Getters and Setters (All Thread Safe)
+	// Navigation (all thread safe)
 	void SetPath(std::list<Coordsi> path);
-	Coordsi GetDestination();
 	void UpdateDestination();
-	bool wait;
+	Coordsi GetDestination();
+	Coordsf GetGoal();
+	bool WaitngPath();
+	std::atomic<bool> wait;
 
 	// Rendering informaiton 
 	int spriteId_;
+
+	// Position Information (Not Thread safe)
 	Coordsf currentPosition;
 	Coordsf forwardDirection;
 	Coordsi currentTile;
 	
-	// AI Stats
+	// AI Stats (Not Thread safe)
 	int health;
 	int attack;
 	static float speed;
 	Unit* Opponent;
 
-	// ThreadSafety
-	std::mutex path_lock;
-
 private:
-
 
 	// AI Coontrol Information 
 	std::list<Coordsi> path_;
 	AiState* currentState_;
+
+	// ThreadSafety
+	std::mutex path_lock;
 
 };
 

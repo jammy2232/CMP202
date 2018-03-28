@@ -66,22 +66,13 @@ public:
 
 private:
 
+	// Pathfiding 
 	std::list<Coordsi> findPath(Coordsi Start, Coordsi Finish);
-	void Reset();
-	void Work();
-
-	static std::queue<Task> taskQueue_;
-	const std::vector<bool> baseTileMap_;
-	Cell* GetCell(Coordsi indexLocation);
 	int CalculateHeuristic(Coordsi Start, Coordsi Finish);
+	void Reset();
+	Cell* GetCell(Coordsi indexLocation);
+	const std::vector<bool> baseTileMap_;
 	std::vector<Cell> cellMap_;
-	Task GetTask();
-
-	std::thread* worker_;
-	static Semaphor requests_;
-	static std::mutex queue;
-
-	bool required = false;
 
 	Coordsi neighboroughs[8] =
 	{
@@ -94,6 +85,17 @@ private:
 		Coordsi(0, 1),
 		Coordsi(1, 1)
 	};
+
+	// Task Management
+	static std::queue<Task> taskQueue_;
+	Task GetTask();
+
+	// Thread and Access Management 
+	void Work();
+	std::thread* worker_;
+	static Semaphor requests_;
+	static std::mutex queue;
+	bool required = false;
 
 };
 

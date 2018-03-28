@@ -1,5 +1,7 @@
 #include "PathFinder.h"
 
+#include <assert.h>
+
 // Private static delcarations
 Semaphor PathFinder::requests_;
 std::mutex PathFinder::queue;
@@ -192,7 +194,7 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 	}
 
 	// add the start to the path to complete it 
-	path.push_front(cell->location);
+	// path.push_front(cell->location);
 
 	// return the complete path object
 	return path;
@@ -203,11 +205,13 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 void PathFinder::Reset()
 {
 
+	cellMap_.clear();
+
 	if (cellMap_.empty())
 	{
 
 		// Create a map of cells 
-		for (unsigned int i = 0; i < baseTileMap_.size(); i++)
+		for (int i = 0; i < baseTileMap_.size(); i++)
 		{
 
 			// Create a new cell
@@ -226,7 +230,7 @@ void PathFinder::Reset()
 	}
 
 	// Function to reset/Initialise all the data for calculatiung the next path
-	for(unsigned int i = 0; i < baseTileMap_.size(); i++)
+	for(int i = 0; i < baseTileMap_.size(); i++)
 	{
 
 		// Reset the tiles
@@ -257,6 +261,9 @@ void PathFinder::Work()
 		// Get a task
 		Task task = GetTask();
 
+		// Reset the map
+		Reset();
+
 		// Complete the task
 		task.unit->SetPath(findPath(task.start, task.destination));
 
@@ -277,6 +284,7 @@ Cell * PathFinder::GetCell(Coordsi indexLocation)
 
 }
 
+
 int PathFinder::CalculateHeuristic(Coordsi Start, Coordsi Finish)
 {
 
@@ -288,6 +296,7 @@ int PathFinder::CalculateHeuristic(Coordsi Start, Coordsi Finish)
 	return (10 * (dx + dy) - (6 * std::min(dx, dy)));
 
 }
+
 
 Task PathFinder::GetTask()
 {

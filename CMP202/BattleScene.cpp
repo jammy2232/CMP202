@@ -40,11 +40,8 @@ bool BattleScene::Init()
 	// Start the pathfinder
 	pathfinder = new PathFinder(tileMapStatus_);
 
-	// Flag that the initailsation has been complete
-	loaded = true;
-
 	// Spawn Units
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < UNITS; i++)
 	{
 
 		Unit* newUnit = new Unit();
@@ -55,6 +52,7 @@ bool BattleScene::Init()
 			coordinates = Coordsi(rand() % (MAPDIMENSIONS - 1), rand() % (MAPDIMENSIONS - 1));
 			newUnit->currentTile = coordinates;
 			newUnit->currentPosition = Coordsf(newUnit->currentTile.x * TILESIZE, newUnit->currentTile.y * TILESIZE);
+			newUnit->forwardDirection = Coordsf(0.0f, 0.0f);
 		} while (!tileMapStatus_[coordinates.y * MAPDIMENSIONS + coordinates.x]);
 
 		SetTileOccupancy(newUnit->currentTile, true);
@@ -65,9 +63,14 @@ bool BattleScene::Init()
 	// Calculate the paths
 	for (auto unit : units_)
 	{
-		PathFinder::RequestPath(unit, Coordsi(), Coordsi(MAPDIMENSIONS - 1, MAPDIMENSIONS - 1));
+	// 	int randx = rand() % (MAPDIMENSIONS - 1);
+	//	int randy = rand() % (MAPDIMENSIONS - 1);
+		PathFinder::RequestPath(unit, unit->currentTile , Coordsi(MAPDIMENSIONS - 1, MAPDIMENSIONS - 1));
 		unit->ChangeState(Moving::stateInstance);
 	}
+
+	// Flag that the initailsation has been complete
+	loaded = true;
 
 	// return to show error free;
 	return true;
@@ -123,7 +126,6 @@ void BattleScene::Update(float delta_time)
 	// update all the units
 	for (auto unit : units_)
 	{
-		std::unique_lock<std::mutex> lock(unit->path_lock);
 	 	unit->Update(delta_time);
 	}
 
@@ -151,7 +153,7 @@ void BattleScene::Render(sf::RenderWindow & window)
 	}
 
 	for (auto unit : units_)
-	{
+	{		
 		sprites_[unit->spriteId_].setPosition(unit->currentPosition.x, unit->currentPosition.y);
 		window.draw(sprites_[unit->spriteId_]);
 	}
@@ -347,7 +349,7 @@ void BattleScene::TileMapGenerator()
 	}
 
 	// Add random trees and foliage on 10% of the map
-	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS * 0.1f); i++)
+	for (int i = 0; i < (MAPDIMENSIONS * MAPDIMENSIONS * 0.3f); i++)
 	{
 
 		// Get a Random Tile ID
@@ -378,6 +380,8 @@ void BattleScene::TileMapGenerator()
 				{
 					// Place Bridge
 					renderMap_[y * MAPDIMENSIONS + x] = 57;
+					// Areas are not walkable
+					tileMapStatus_[y * MAPDIMENSIONS + x] = true;
 				}
 				else
 				{
@@ -395,6 +399,8 @@ void BattleScene::TileMapGenerator()
 				{
 					// Place Bridge
 					renderMap_[y * MAPDIMENSIONS + x] = 57;
+					// Areas are not walkable
+					tileMapStatus_[y * MAPDIMENSIONS + x] = true;
 				}
 				else
 				{
