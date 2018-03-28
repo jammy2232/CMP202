@@ -113,7 +113,17 @@ void Moving::Step(Unit * unit, float dt)
 		unit->currentPosition.x = unit->GetGoal().x;
 		unit->currentTile = unit->GetDestination();
 		unit->UpdateDestination();
-		unit->ChangeState(Moving::stateInstance);
+
+		// if the final desintaiton is reachead
+		if (unit->GetFinalDestination().x == unit->currentTile.x && unit->GetFinalDestination().y == unit->currentTile.y)
+		{
+			unit->ChangeState(SearchAndDestoy::stateInstance);
+		}
+		else
+		{
+			unit->ChangeState(Moving::stateInstance);
+		}
+		
 	}
 
 }

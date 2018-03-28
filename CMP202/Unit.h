@@ -26,6 +26,7 @@ public:
 	void SetPath(std::list<Coordsi> path);
 	void UpdateDestination();
 	Coordsi GetDestination();
+	Coordsi GetFinalDestination();
 	Coordsf GetGoal();
 	bool WaitngPath();
 	std::atomic<bool> wait;
@@ -37,6 +38,7 @@ public:
 	Coordsf currentPosition;
 	Coordsf forwardDirection;
 	Coordsi currentTile;
+
 	
 	// AI Stats (Not Thread safe)
 	int health;
@@ -48,6 +50,7 @@ private:
 
 	// AI Coontrol Information 
 	std::list<Coordsi> path_;
+	Coordsi finalDestination;
 	AiState* currentState_;
 
 	// ThreadSafety

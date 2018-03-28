@@ -50,25 +50,20 @@ bool BattleScene::Init()
 		do
 		{
 			coordinates = Coordsi(rand() % (MAPDIMENSIONS - 1), rand() % (MAPDIMENSIONS - 1));
-			newUnit->currentTile = coordinates;
-			newUnit->currentPosition = Coordsf(newUnit->currentTile.x * TILESIZE, newUnit->currentTile.y * TILESIZE);
-			newUnit->forwardDirection = Coordsf(0.0f, 0.0f);
+
 		} while (!tileMapStatus_[coordinates.y * MAPDIMENSIONS + coordinates.x]);
+
+		newUnit->currentTile = coordinates;
+		newUnit->currentPosition = Coordsf(newUnit->currentTile.x * TILESIZE, newUnit->currentTile.y * TILESIZE);
+		newUnit->forwardDirection = Coordsf(0.0f, 0.0f);
+
+		newUnit->ChangeState(SearchAndDestoy::stateInstance);
 
 		SetTileOccupancy(newUnit->currentTile, true);
 		units_.push_back(newUnit);
 
 	}
 	
-	// Calculate the paths
-	for (auto unit : units_)
-	{
-	// 	int randx = rand() % (MAPDIMENSIONS - 1);
-	//	int randy = rand() % (MAPDIMENSIONS - 1);
-		PathFinder::RequestPath(unit, unit->currentTile , Coordsi(MAPDIMENSIONS - 1, MAPDIMENSIONS - 1));
-		unit->ChangeState(Moving::stateInstance);
-	}
-
 	// Flag that the initailsation has been complete
 	loaded = true;
 
@@ -159,6 +154,14 @@ void BattleScene::Render(sf::RenderWindow & window)
 	}
 
 
+
+
+}
+
+
+void BattleScene::RenderUI(sf::RenderWindow & window)
+{
+
 	//Minimap render function ***********************
 
 	window.setView(miniMap_View);
@@ -180,18 +183,6 @@ void BattleScene::Render(sf::RenderWindow & window)
 		sprites_[unit->spriteId_].setPosition(unit->currentPosition.x, unit->currentPosition.y);
 		window.draw(sprites_[unit->spriteId_]);
 	}
-
-}
-
-
-void BattleScene::RenderUI(sf::RenderWindow & window)
-{
-
-	// Render Geometry Symbols
-
-	// Render the Map Unity Symbols
-
-	// Render Current View Box
 
 	// get the current desktop
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();

@@ -3,6 +3,8 @@
 #include "AiState.h"
 #include "Coordsi.h"
 
+#include "Moving.h"
+
 class SearchAndDestoy : public AiState
 {
 public:
@@ -19,7 +21,7 @@ public:
 private:
 
 	Unit* CheckForEnemies(int range);
-	Coordsi MoveToRandomLocation(int distance);
+	Coordsi MoveToRandomLocation(Unit* unit, int distance);
 
 	// Check for any closeby Enemies 
 

@@ -47,11 +47,19 @@ void Unit::SetPath(std::list<Coordsi> path)
 	// Lock the path to be updated
 	std::unique_lock<std::mutex> Set(path_lock);
 
-	// delete the old path
+	// Remove the old one
 	path_.clear();
+
+	if (path.empty())
+	{
+		path.push_front(currentTile);
+	}
 
 	// Set the new path
 	path_ = path;
+
+	// set the final destination
+	finalDestination = path_.back();
 
 }
 
@@ -69,6 +77,23 @@ Coordsi Unit::GetDestination()
 	
 	// Get the next path desitnation 
 	return path_.front();
+
+}
+
+Coordsi Unit::GetFinalDestination()
+{
+
+	// Lock the path to be updated
+	std::unique_lock<std::mutex> Set(path_lock);
+
+	// check if a path exists
+	if (path_.empty())
+	{
+		return currentTile;
+	}
+
+	// Get the next path desitnation 
+	return finalDestination;
 
 }
 

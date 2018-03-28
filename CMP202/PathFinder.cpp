@@ -182,7 +182,7 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 	// If no path exists the end node will not have a parent
 	if (cell->parent == nullptr)
 	{
-		path.push_back(Start);
+		path.clear();
 		return path;
 	}
 

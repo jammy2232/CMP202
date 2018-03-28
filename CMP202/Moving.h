@@ -3,6 +3,8 @@
 
 // Other states 
 #include "LookAround.h"
+#include "SearchAndDestoy.h"
+
 class LookAround;
 
 class Moving : public AiState
