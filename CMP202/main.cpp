@@ -7,14 +7,14 @@
 #include <SFML\Graphics.hpp>
 
 // Application includes
-#include "LoadingScene.h"
-#include "BattleScene.h"
-#include "Moving.h"
-#include "LookAround.h"
-#include "SearchAndDestoy.h"
-#include "Fighting.h"
+#include "GameManager.h"
+
+// Std thread includes
+#include <thread>
+#include <memory>
 
 
+// Main Thread handling game system updates
 int main()
 {
 
@@ -27,31 +27,15 @@ int main()
 	// Create the main game window with HD resolution
 	sf::RenderWindow window(sf::VideoMode(currentResolution.width, currentResolution.height), "CMP202 Coursework", sf::Style::Fullscreen);
 
-	// Application has start up
-	Scene* current;
-	LoadingScene* loading = new LoadingScene();
-	BattleScene* battle = new BattleScene();
+	// Set the opengl instance to false to allow multithreaded rendering
+	window.setActive(false);
 
-	// Load all the information to the scene
-	if (!loading->Init())
-	{
-		return EXIT_FAILURE;
-	}
+	// Initisaise the game application
+	GameManager* gameApplication = GameManager::Create();;
 
-	// Start loading the first scene
-	loading->SceneToLoad(battle, nullptr);
-
-	// Assign the loading scene as the current scene 
-	current = (Scene*)loading;
-
-	// Reference to the Ai manager system
-	AiState::SetSceneToControl(battle);
-
-	// Create copies of all the state objects
-	Moving::stateInstance = new Moving();
-	LookAround::stateInstance = new LookAround();
-	SearchAndDestoy::stateInstance = new SearchAndDestoy();
-	Fighting::stateInstance = new Fighting();
+	// Start the rendering thread to render the game manager
+  	std::thread rendering(&GameManager::Render, gameApplication, &window);
+ 	rendering.detach();
 
 	// This clock object is required to determine the delta time
 	sf::Clock clock;
@@ -92,45 +76,24 @@ int main()
 		// Calculate the delta time (time to render each frame)
 		deltaTime = clock.restart().asSeconds();
 
-		// Check if a scene transition has been requested
-		if (current->transition())
+		// Update the game application and check of exit begin triggered
+		if (!gameApplication->Update(deltaTime))
 		{
 
-			// Get the next scene
-			Scene* nextScene = current->transition();
+			// Cleanup the application
+			gameApplication->CleanUp();
 
-			// if the current scene is a loading scene (Loading scenes will handle deleting the old scene)
-			if (current->IsLoadingScene())
-			{
-				delete current;
-				current = nullptr;
-			}
-
-			// update the scene pointer
-			current = nextScene;
+			// Return success if the game is exited
+			return EXIT_SUCCESS;
 
 		}
-
-		// Update wrap the scene
-		current->HandleInput(deltaTime);
-		current->Update(deltaTime);
-
-		// Clear the current window
-		window.clear(sf::Color::Black);
-
-		// Pass the scene access to the screen
-		current->Render(window);
-		current->RenderUI(window);
-		
-		// redering the scene 
-		window.display();
 
 	}
 
 	// Cleanup the application
-	current->CleanUp();
+	gameApplication->CleanUp();
 
-	// Return success
+	// Return success if the wondow is closed
 	return EXIT_SUCCESS;
 
 }

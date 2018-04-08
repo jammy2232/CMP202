@@ -1,31 +1,36 @@
 #pragma once
 
+// base class and units
+#include "Unit.h"
 #include "AiState.h"
-#include "Coordsi.h"
+#include "SFML\System\Vector2.hpp"
 
-#include "Moving.h"
+//State links
+class Unit;
 
 class SearchAndDestoy : public AiState
 {
 public:
 
-	SearchAndDestoy();
+	SearchAndDestoy(Unit* unit) { unit_ = unit; }
 	~SearchAndDestoy();
 
-	void Enter(Unit* unit);
-	void Step(Unit* unit, float dt);
-	void Exit(Unit* unit);
-
-	static SearchAndDestoy* stateInstance;
+	void Enter();
+	void Step(float dt);
+	void Exit();
 
 private:
 
+	// Internal state functions
 	Unit* CheckForEnemies(int range);
-	Coordsi MoveToRandomLocation(Unit* unit, int distance);
+	sf::Vector2i MoveToRandomLocation(int distance);	
 
-	// Check for any closeby Enemies 
+	// Internal data
+	sf::Vector2i randomLocation = sf::Vector2i(-1, -1);
 
-	
+	// Internal states 
+	enum STATE { ENEMYCHECK, PATHWAITING, MOVING };
+	STATE state_ = ENEMYCHECK;
 
 };
 

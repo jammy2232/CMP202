@@ -1,14 +1,12 @@
 #include "Unit.h"
 
-float Unit::speed = UNITSPEED;
-
-Unit::Unit()
+Unit::Unit(std::vector<Unit*>& board, int MapDimension) : gameBoard(board), mapDimension(MapDimension)
 {
 
 	health = UNITHEALTH;
-	attack = UNITATTACK;
-	wait = false;
-	spriteId_ = 105;
+	spriteInfo.id = 105;
+	spriteInfo.x = 0.0f;
+	spriteInfo.y = 0.0f;
 
 }
 
@@ -18,11 +16,10 @@ Unit::~Unit()
 }
 
 
-void Unit::Update(float dt)
+void Unit::UpdateState(float dt)
 {
 	if (currentState_)
-		currentState_->Step(this, dt);
-
+		currentState_->Step(dt);
 }
 
 
@@ -30,18 +27,30 @@ void Unit::ChangeState(AiState * newState)
 {
 
 	// Exit the old
-	if(currentState_)
-		currentState_->Exit(this);
+	if (currentState_)
+		currentState_->Exit();
 
 	// Set the new
 	currentState_ = newState;
 
 	// Enter the new
-	currentState_->Enter(this);
+	currentState_->Enter();
 
 }
 
-void Unit::SetPath(std::list<Coordsi> path)
+void Unit::SetInitialState(AiState * state)
+{
+
+	// Check no state exists
+	assert(!currentState_);
+
+	// assign the initial state
+	currentState_ = state;
+
+}
+
+
+void Unit::SetPath(std::list<sf::Vector2i> path)
 {
 
 	// Lock the path to be updated
@@ -58,12 +67,10 @@ void Unit::SetPath(std::list<Coordsi> path)
 	// Set the new path
 	path_ = path;
 
-	// set the final destination
-	finalDestination = path_.back();
-
 }
 
-Coordsi Unit::GetDestination()
+
+sf::Vector2i Unit::GetDestination()
 {
 
 	// Lock the path to be updated
@@ -80,7 +87,8 @@ Coordsi Unit::GetDestination()
 
 }
 
-Coordsi Unit::GetFinalDestination()
+
+sf::Vector2i Unit::GetFinalDestination()
 {
 
 	// Lock the path to be updated
@@ -93,16 +101,16 @@ Coordsi Unit::GetFinalDestination()
 	}
 
 	// Get the next path desitnation 
-	return finalDestination;
+	return path_.back();
 
 }
 
 
-Coordsf Unit::GetGoal()
+sf::Vector2f Unit::GetGoal()
 {
 
-	Coordsi temp = GetDestination();
-	return Coordsf((float)temp.x * TILESIZE, (float)temp.y * TILESIZE);
+	sf::Vector2i temp = GetDestination();
+	return sf::Vector2f((float)temp.x * TILESIZE, (float)temp.y * TILESIZE);
 
 }
 

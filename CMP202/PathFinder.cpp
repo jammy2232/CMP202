@@ -2,13 +2,54 @@
 
 #include <assert.h>
 
+
+// structures required for pathding
+
+struct Cell
+{
+
+	enum INFO { BASIC, BLOCKED, OPEN, CLOSED };
+
+	// This is the location of the cell on the world grid
+	sf::Vector2i location;
+	// This is to determine the movement cost based on type
+	INFO state = BASIC;
+
+	// Values for calucluating the A* Algorithm
+	int f_cost = INT32_MAX;
+	int g_cost = INT32_MAX;
+	Cell* parent = nullptr;
+
+};
+
+
+class cellCompare
+{
+public:
+
+	bool operator() (const Cell& left, const Cell& right) const
+	{
+		return left.f_cost > right.f_cost;
+	}
+
+};
+
+
+struct Task
+{
+	Unit* unit = nullptr;
+	sf::Vector2i start;
+	sf::Vector2i destination;
+};
+
+
 // Private static delcarations
 Semaphor PathFinder::requests_;
 std::mutex PathFinder::queue;
 std::queue<Task> PathFinder::taskQueue_;
 
 
-PathFinder::PathFinder(const std::vector<bool> baseTileMap) : baseTileMap_(baseTileMap)
+PathFinder::PathFinder(const std::vector<bool> baseTileMap, int MapDimensions) : baseTileMap_(baseTileMap), mapDimension_(MapDimensions)
 {
 
 	// Initialise the internal map
@@ -33,7 +74,7 @@ PathFinder::~PathFinder()
 }
 
 
-void PathFinder::RequestPath(Unit* unit, Coordsi start, Coordsi destination)
+void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destination)
 {
 
 	// Lock the queue (as more than one pathfinding worker thread can exist)
@@ -54,7 +95,7 @@ void PathFinder::RequestPath(Unit* unit, Coordsi start, Coordsi destination)
 }
 
 
-std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
+std::list<sf::Vector2i> PathFinder::findPath(sf::Vector2i Start, sf::Vector2i Finish)
 {
 
 	// create a reference to a number of x/y coordinates
@@ -120,7 +161,7 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 			xcoord = neighborough.x + current->location.x;
 
 			// Get a reference to the neighborough
-			neigh = GetCell(Coordsi(xcoord, ycoord));
+			neigh = GetCell(sf::Vector2i(xcoord, ycoord));
 
 			// check the node exists i.e. isn't off the map
 			if (neigh == nullptr)
@@ -162,7 +203,7 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 
 			// Make the changes to the neighborogh based on the current locaion 
 			neigh->g_cost = new_g_cost;
-			neigh->f_cost = new_g_cost + CalculateHeuristic(Coordsi(xcoord, ycoord), Finish);
+			neigh->f_cost = new_g_cost + CalculateHeuristic(sf::Vector2i(xcoord, ycoord), Finish);
 			neigh->parent = current;
 
 			// Add a copy of this node to the Open set
@@ -174,7 +215,7 @@ std::list<Coordsi> PathFinder::findPath(Coordsi Start, Coordsi Finish)
 	}
 
 	// Generate the path a new path to return 
-	std::list<Coordsi> path;
+	std::list<sf::Vector2i> path;
 
 	// Start at the end Node to create the path object
 	Cell* cell = GetCell(Finish);
@@ -218,9 +259,9 @@ void PathFinder::Reset()
 			Cell newCell;
 
 			// This is the location of the cell on the world grid
-			Coordsi loc;
-			loc.x = i % MAPDIMENSIONS;
-			loc.y = i / MAPDIMENSIONS;
+			sf::Vector2i loc;
+			loc.x = i % mapDimension_;
+			loc.y = i / mapDimension_;
 			newCell.location = loc;
 
 			cellMap_.push_back(newCell);
@@ -272,20 +313,20 @@ void PathFinder::Work()
 }
 
 
-Cell * PathFinder::GetCell(Coordsi indexLocation)
+Cell * PathFinder::GetCell(sf::Vector2i indexLocation)
 {
 
 	// If a place is request that doesn't exist return null
-	if (indexLocation.y < 0 || indexLocation.y >= MAPDIMENSIONS || indexLocation.x < 0 || indexLocation.x >= MAPDIMENSIONS)
+	if (indexLocation.y < 0 || indexLocation.y >= mapDimension_ || indexLocation.x < 0 || indexLocation.x >= mapDimension_)
 		return nullptr;
 
 	// Determine the row start position in the vector Return a pointer to the specific node requested
-	return &cellMap_[indexLocation.y * MAPDIMENSIONS + indexLocation.x];
+	return &cellMap_[indexLocation.y * mapDimension_ + indexLocation.x];
 
 }
 
 
-int PathFinder::CalculateHeuristic(Coordsi Start, Coordsi Finish)
+int PathFinder::CalculateHeuristic(sf::Vector2i Start, sf::Vector2i Finish)
 {
 
 	// Calculate the dx and dy for the heruristics

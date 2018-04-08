@@ -1,57 +1,68 @@
 #pragma once
 
+// std funciton/data includes
 #include <list>
+#include <mutex>
+#include <vector>
+
+// Game Systems
 #include "PathFinder.h"
 #include "AiState.h"
-#include <mutex>
-#include "Coordsf.h"
-#include "Coordsi.h"
+#include "RenderManager.h"
+#include "BattleScene.h"
+
+// Global Varialbles
 #include "GameSettings.h"
 
-class AiState;
-
+// Declaration for team sprites
 enum TEAM { BLUE, RED };
 
 class Unit
 {
 public:
 
-	Unit();
+	Unit(std::vector<Unit*>& board, int MapDimension);
 	~Unit();
 
-	void Update(float dt);
+	// Handling state information
+	void UpdateState(float dt);
 	void ChangeState(AiState* newState);
 
-	// Navigation (all thread safe)
-	void SetPath(std::list<Coordsi> path);
+	// Setting initial state
+	void SetInitialState(AiState* state);
+
+	// Access to the battleScene for seeing unit maps
+	std::vector<Unit*>& gameBoard;
+
+	// Navigation controls for path access (all thread safe)
+	void SetPath(std::list<sf::Vector2i> path);
 	void UpdateDestination();
-	Coordsi GetDestination();
-	Coordsi GetFinalDestination();
-	Coordsf GetGoal();
+	sf::Vector2i GetDestination();
+	sf::Vector2i GetFinalDestination();
+	sf::Vector2f GetGoal();
 	bool WaitngPath();
-	std::atomic<bool> wait;
+	int mapSize() { return mapDimension; }
+
+	// PositionUpdate
+	bool posDirty_;
 
 	// Rendering informaiton 
-	int spriteId_;
+	RenderObject spriteInfo;
+	int entityId;
 
-	// Position Information (Not Thread safe)
-	Coordsf currentPosition;
-	Coordsf forwardDirection;
-	Coordsi currentTile;
+	// Position Information
+	sf::Vector2i currentTile;
 
-	
-	// AI Stats (Not Thread safe)
+	// Unit consistant state
 	int health;
-	int attack;
-	static float speed;
-	Unit* Opponent;
+	TEAM team;
 
 private:
 
 	// AI Coontrol Information 
-	std::list<Coordsi> path_;
-	Coordsi finalDestination;
-	AiState* currentState_;
+	std::list<sf::Vector2i> path_;
+	int mapDimension = 0;
+	AiState* currentState_ = nullptr;
 
 	// ThreadSafety
 	std::mutex path_lock;

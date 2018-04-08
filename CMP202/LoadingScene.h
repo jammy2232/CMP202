@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Scene.h"
-#include <thread>
+
+// Standard library functions
+#include <mutex>
+#include <math.h>
 
 class LoadingScene : Scene
 {
@@ -13,8 +16,6 @@ public:
 	// Initialisation
 	bool Init();
 	void CleanUp();
-	void SceneToLoad(Scene* newScene, Scene* oldScene);
-	Scene* transition();
 
 	// Main Scene loop
 	void HandleInput(float delta_time);
@@ -24,19 +25,17 @@ public:
 
 private:
 
-	// Scene to load
-	Scene* newScene_;
-	Scene* oldScene_;
-
 	// Loading scene parameters
-	sf::Texture* loadingTexture;
-	sf::Sprite* loadingSprite;
-	sf::Texture* loadingWheelTexture;
-	sf::Sprite* loadingWheelSprite;
+	sf::Texture* loadingBackgroundTexture_ = nullptr;
+	sf::Sprite* loadingBackgroundSprite_ = nullptr;
+	sf::Texture* loadingIconTexture_ = nullptr;
+	sf::Sprite* loadingIconSprite_ = nullptr;
 
-	// Reference to the loading thread
-	std::thread* loadThread;
-	std::thread* unloadThread;
+	// Scene manipulation
+	float timer = 0.0f;
+
+	// mutex for sprite protection
+	std::mutex LoadingIconMutex;
 
 };
 

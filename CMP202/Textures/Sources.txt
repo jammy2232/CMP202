@@ -1,5 +1,3 @@
-Loading Screen - https://www.wallpapervortex.com/wallpaper-42834_historical_medieval_battle.html#.WrEwlujFKUk
-Loading Wheel - Kenny asset pack 3
 Medieval Sprite Sheet - Kenny's asset pack 2
 
 XML Reader Library - http://rapidxml.sourceforge.net/

@@ -1,8 +1,6 @@
 #pragma once
 
 // Map Information for Testing
-#define MAPDIMENSIONS 50
-#define UNITS 200
 #define TILESIZE 128.0f
 
 // Unit Setting

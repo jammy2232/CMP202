@@ -1,20 +1,25 @@
 #pragma once
 
+// base class 
 #include "Scene.h"
 
 // std
 #include <vector>
 #include <thread>
 
-// XML Parsing
-#include "rapidxml.hpp"
-#include <fstream>
-
 // Battle Gameplay
 #include "Unit.h"
 #include "GameSettings.h"
 #include "PathFinder.h"
 
+// Generation and management systems
+#include "RenderManager.h"
+#include "MapGenerator.h"
+
+// Initial unit state
+#include "SearchAndDestoy.h"
+
+// Forward delcarations
 class PathFinder;
 class Unit;
 enum TEAM;
@@ -29,7 +34,6 @@ public:
 	// Initialisation
 	bool Init();
 	void CleanUp();
-	Scene* transition();
 	
 	// Main Scene loop
 	void HandleInput(float delta_time);
@@ -37,39 +41,27 @@ public:
 	void Render(sf::RenderWindow& window);
 	void RenderUI(sf::RenderWindow& window);
 
-	// Ai interaction
-	bool CheckIfTileIsOccupied(Coordsi request);
-	void SetTileOccupancy(Coordsi request, bool occupancy);
-	Unit* CheckForUnit(Coordsi location, int range, TEAM team);
-
 private:
 
-	// reference to graphics objects
-	sf::Texture spriteSheet_;
-	std::vector<sf::Sprite> sprites_;
+	// Map size information 
+	const int mapDimension = 50;
+	const int maxUnits = 200;
 
-	// Data for Rendering Only (Tile set on the ground)
-	std::vector<int> renderMap_;
+	// Renderer Managers
+	RenderManager* tileMapRenderer = nullptr;
+	RenderManager* unitRenderer = nullptr;
 
-	// Data for Rendering and Calculation
-	std::vector<Unit*> units_;
-
-	// Data for Pathfinding
-	// storing the locations that units are currently blocking
-	std::vector<bool> currentMapStatus_;
-	// Used to calculate the path the units need to follow
-	std::vector<bool> tileMapStatus_;
+	// Pathfiding system
+	PathFinder* pathfinder;
 
 	// Loading and preperation functions
-	bool LoadSpriteSheet();
 	void SetUpViewWindows();
-	void TileMapGenerator();
 
-	// Thread safe functions 
-	std::mutex currentMapStatusLock_;
+	// Create a vector to store all the unit locations
+	std::vector<Unit*> units_;
 
-	// Systems
-	PathFinder* pathfinder;
+	// Thread safety
+	std::mutex windowEditor_;
 
 };
 

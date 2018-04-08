@@ -45,12 +45,6 @@
     <ClCompile Include="PathFinder.cpp">
       <Filter>Source Files\Pathfinding</Filter>
     </ClCompile>
-    <ClCompile Include="Coordsf.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
-    <ClCompile Include="Coordsi.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Semaphor.cpp">
       <Filter>Source Files\Helper</Filter>
     </ClCompile>
@@ -60,25 +54,22 @@
     <ClCompile Include="LoadingScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files\Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="AiState.cpp">
-      <Filter>Source Files\AIUnits</Filter>
-    </ClCompile>
-    <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
     <ClCompile Include="SearchAndDestoy.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="Fighting.cpp">
-      <Filter>Source Files\AIUnits</Filter>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Moving.cpp">
-      <Filter>Source Files\AIUnits</Filter>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="LookAround.cpp">
+    <ClCompile Include="MapGenerator.cpp">
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,17 +104,17 @@
     <ClInclude Include="SearchAndDestoy.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
-    <ClInclude Include="Fighting.h">
-      <Filter>Header Files\AIUnits</Filter>
-    </ClInclude>
-    <ClInclude Include="Moving.h">
-      <Filter>Header Files\AIUnits</Filter>
-    </ClInclude>
-    <ClInclude Include="LookAround.h">
-      <Filter>Header Files\AIUnits</Filter>
-    </ClInclude>
     <ClInclude Include="GameSettings.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="MapGenerator.h">
+      <Filter>Header Files\Helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
