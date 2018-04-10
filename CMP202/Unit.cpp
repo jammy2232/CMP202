@@ -28,7 +28,10 @@ void Unit::ChangeState(AiState * newState)
 
 	// Exit the old
 	if (currentState_)
+	{
 		currentState_->Exit();
+		delete currentState_;
+	}
 
 	// Set the new
 	currentState_ = newState;
@@ -66,6 +69,18 @@ void Unit::SetPath(std::list<sf::Vector2i> path)
 
 	// Set the new path
 	path_ = path;
+
+}
+
+
+void Unit::ResetPath()
+{
+
+	// Lock the path to be updated
+	std::unique_lock<std::mutex> Set(path_lock);
+
+	// Reset the path 
+	path_.clear();
 
 }
 
@@ -139,5 +154,13 @@ bool Unit::WaitngPath()
 	// Lock the path to be updated
 	std::unique_lock<std::mutex> Set(path_lock);
 	return path_.empty();
+
+}
+
+std::list<sf::Vector2i> Unit::CopyPath()
+{
+	// Lock the path to be updated
+	std::unique_lock<std::mutex> Set(path_lock);
+	return path_;
 
 }

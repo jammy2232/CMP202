@@ -24,6 +24,7 @@ protected:
 	bool MoveTheUnit(float dt);
 	bool MoveBlocked() { return blocked; }
 	sf::Vector2i currentDestination;
+	float speedMod_ = 1.0f;
 
 private:
 

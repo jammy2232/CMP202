@@ -72,6 +72,9 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
+    <ClCompile Include="Charge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PathFinder.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="MapGenerator.h">
       <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Charge.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

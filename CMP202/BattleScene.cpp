@@ -29,6 +29,9 @@ bool BattleScene::Init()
 	// Populate the unit map
 	units_.assign(mapDimension*mapDimension, nullptr);
 
+	// bool for team selecetion
+	bool team = false;
+
 	// Spawn Units in random locations
 	for (int i = 0; i < maxUnits; i++)
 	{
@@ -62,7 +65,19 @@ bool BattleScene::Init()
 
 		// Apply the details to the new unit
 		newUnit->currentTile = coordinates;
-		newUnit->spriteInfo.id = 105;
+
+		if (team)
+		{
+			newUnit->team = Unit::TEAM::BLUE;
+			team = false;
+		}
+		else
+		{
+			newUnit->team = Unit::TEAM::RED;
+			team = true;
+		}
+		
+		newUnit->spriteInfo.id = (int)newUnit->team;
 		newUnit->spriteInfo.x = (float)newUnit->currentTile.x * TILESIZE;
 		newUnit->spriteInfo.y = (float)newUnit->currentTile.y * TILESIZE;
 		

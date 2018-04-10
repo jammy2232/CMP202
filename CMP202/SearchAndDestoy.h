@@ -5,6 +5,8 @@
 #include "AiState.h"
 #include "SFML\System\Vector2.hpp"
 
+#include "Charge.h"
+
 //State links
 class Unit;
 

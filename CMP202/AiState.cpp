@@ -129,9 +129,9 @@ bool AiState::incrementMovement(float dt)
 	if (forwardDirection.x != 0.0f)
 	{
 
-		unit_->spriteInfo.x += forwardDirection.x * UNITSPEED * dt;
+		unit_->spriteInfo.x += forwardDirection.x * UNITSPEED * dt * speedMod_;
 
-		if (std::abs(unit_->spriteInfo.x - unit_->GetGoal().x) < UNITSPEED * dt)
+		if (std::abs(unit_->spriteInfo.x - unit_->GetGoal().x) < UNITSPEED * dt * speedMod_)
 		{
 			unit_->spriteInfo.x = unit_->GetGoal().x;
 			xComplete = true;
@@ -146,9 +146,9 @@ bool AiState::incrementMovement(float dt)
 	if (forwardDirection.y != 0.0f)
 	{
 
-		unit_->spriteInfo.y += forwardDirection.y * UNITSPEED * dt;
+		unit_->spriteInfo.y += forwardDirection.y * UNITSPEED * dt * speedMod_;
 
-		if (std::abs(unit_->spriteInfo.y - unit_->GetGoal().y) < UNITSPEED * dt)
+		if (std::abs(unit_->spriteInfo.y - unit_->GetGoal().y) < UNITSPEED * dt * speedMod_)
 		{
 			unit_->spriteInfo.y = unit_->GetGoal().y;
 			yComplete = true;

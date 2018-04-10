@@ -22,10 +22,13 @@ void SearchAndDestoy::Step(float dt)
 
 		case ENEMYCHECK: // Check if there are any enemies in range
 
-			if (CheckForEnemies(10))
-			{
+			unit_->currentTarget = CheckForEnemies(10);
 
-				// Transition to charge state
+			if (unit_->currentTarget)
+			{
+								
+				unit_->ChangeState(new Charge(unit_));
+				return;
 
 			}
 			else
@@ -134,6 +137,36 @@ void SearchAndDestoy::Exit()
 
 Unit * SearchAndDestoy::CheckForEnemies(int range)
 {
+
+	// Search the grid local to this unit to find any enemies 
+	for (int y = unit_->currentTile.y - range; y < range; y++)
+	{
+
+		for (int x = unit_->currentTile.x - range; x < range; x++)
+		{
+
+			// Validate the positions are valid
+			if (x > -1 && y > -1 && x < unit_->mapSize() && y < unit_->mapSize())
+			{
+
+				Unit* testUnit = unit_->gameBoard[y*unit_->mapSize() + x*unit_->mapSize()];
+
+				// Check of there is an enemy unit
+				if (testUnit != nullptr)
+				{
+					if (testUnit->team != unit_->team)
+					{
+						return testUnit;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
 	return nullptr;
 }
 

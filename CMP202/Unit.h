@@ -11,11 +11,10 @@
 #include "RenderManager.h"
 #include "BattleScene.h"
 
+#include <memory>
+
 // Global Varialbles
 #include "GameSettings.h"
-
-// Declaration for team sprites
-enum TEAM { BLUE, RED };
 
 class Unit
 {
@@ -23,6 +22,9 @@ public:
 
 	Unit(std::vector<Unit*>& board, int MapDimension);
 	~Unit();
+
+	// Declaration for team sprites
+	enum TEAM { BLUE = 105, RED = 107 };
 
 	// Handling state information
 	void UpdateState(float dt);
@@ -36,15 +38,18 @@ public:
 
 	// Navigation controls for path access (all thread safe)
 	void SetPath(std::list<sf::Vector2i> path);
+	void ResetPath();
 	void UpdateDestination();
 	sf::Vector2i GetDestination();
 	sf::Vector2i GetFinalDestination();
 	sf::Vector2f GetGoal();
 	bool WaitngPath();
 	int mapSize() { return mapDimension; }
+	std::list<sf::Vector2i> CopyPath();
 
 	// PositionUpdate
 	bool posDirty_;
+	bool Active_ = true;
 
 	// Rendering informaiton 
 	RenderObject spriteInfo;
@@ -55,6 +60,7 @@ public:
 
 	// Unit consistant state
 	int health;
+	Unit* currentTarget = nullptr;
 	TEAM team;
 
 private:
