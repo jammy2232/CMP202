@@ -24,7 +24,7 @@ public:
 	~Unit();
 
 	// Declaration for team sprites
-	enum TEAM { BLUE = 105, RED = 107 };
+	enum TEAM { BLUE = 105, RED = 117 };
 
 	// Handling state information
 	void UpdateState(float dt);
@@ -59,7 +59,8 @@ public:
 	sf::Vector2i currentTile;
 
 	// Unit consistant state
-	int health;
+	int health = 100;
+	float attckCooldown = 1.0f;
 	Unit* currentTarget = nullptr;
 	TEAM team;
 

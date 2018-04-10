@@ -73,7 +73,13 @@
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
     <ClCompile Include="Charge.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Death.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Fight.cpp">
+      <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,7 +126,13 @@
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
     <ClInclude Include="Charge.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Death.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Fight.h">
+      <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

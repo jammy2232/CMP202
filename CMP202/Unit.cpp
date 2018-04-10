@@ -13,6 +13,9 @@ Unit::Unit(std::vector<Unit*>& board, int MapDimension) : gameBoard(board), mapD
 
 Unit::~Unit()
 {
+
+	delete currentState_;
+
 }
 
 

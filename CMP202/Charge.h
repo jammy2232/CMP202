@@ -3,6 +3,9 @@
 #include "AiState.h"
 #include "Unit.h"
 #include<list>
+#include "SearchAndDestoy.h"
+#include "Fight.h"
+#include "Death.h"
 
 class Charge : public AiState
 {

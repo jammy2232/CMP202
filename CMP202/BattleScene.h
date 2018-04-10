@@ -45,7 +45,7 @@ private:
 
 	// Map size information 
 	const int mapDimension = 50;
-	const int maxUnits = 200;
+	const int maxUnits = 400;
 
 	// Renderer Managers
 	RenderManager* tileMapRenderer = nullptr;

@@ -17,12 +17,19 @@ void SearchAndDestoy::Enter()
 void SearchAndDestoy::Step(float dt)
 {
 
+	// Check if the unit is dead 
+	if (unit_->health < 0)
+	{
+		unit_->ChangeState(new Death(unit_));
+		return;
+	}
+
 	switch (state_)
 	{
 
 		case ENEMYCHECK: // Check if there are any enemies in range
 
-			unit_->currentTarget = CheckForEnemies(10);
+			unit_->currentTarget = CheckForEnemies(5);
 
 			if (unit_->currentTarget)
 			{
@@ -139,17 +146,17 @@ Unit * SearchAndDestoy::CheckForEnemies(int range)
 {
 
 	// Search the grid local to this unit to find any enemies 
-	for (int y = unit_->currentTile.y - range; y < range; y++)
+	for (int y = unit_->currentTile.y - range; y < unit_->currentTile.y + range; y++)
 	{
 
-		for (int x = unit_->currentTile.x - range; x < range; x++)
+		for (int x = unit_->currentTile.x - range; x < unit_->currentTile.x  + range; x++)
 		{
 
 			// Validate the positions are valid
-			if (x > -1 && y > -1 && x < unit_->mapSize() && y < unit_->mapSize())
+			if (x > 0 && y > 0 && x < (unit_->mapSize()-1) && y < (unit_->mapSize()-1))
 			{
 
-				Unit* testUnit = unit_->gameBoard[y*unit_->mapSize() + x*unit_->mapSize()];
+				Unit* testUnit = unit_->gameBoard[y*unit_->mapSize() + x];
 
 				// Check of there is an enemy unit
 				if (testUnit != nullptr)

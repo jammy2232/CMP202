@@ -48,20 +48,11 @@ bool BattleScene::Init()
 		// randomly select a starting value
 		coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
 
-		bool test1;
-		bool test2;
-
 		while (!(newMap.GetStaticMapData()[coordinates.y * mapDimension + coordinates.x] && units_[coordinates.y * mapDimension + coordinates.x] == nullptr))
 		{
 			coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
 
-			// randomly select a starting value
-			test1 = units_[coordinates.y * mapDimension + coordinates.x] == nullptr;
-			test2 = newMap.GetStaticMapData()[coordinates.y * mapDimension + coordinates.x] == true;
-
 		} 
-
-		bool test3 = units_[coordinates.y * mapDimension + coordinates.x] == nullptr;
 
 		// Apply the details to the new unit
 		newUnit->currentTile = coordinates;
@@ -155,11 +146,17 @@ void BattleScene::Update(float delta_time)
 
 			unit->UpdateState(delta_time);
 
-			//if the units has moved on the map update the render map
-			if (unit->posDirty_)
+			// check there is a valid unit to process
+			if (unit)
 			{
-				unitRenderer->UpdateEntity(unit->entityId, unit->spriteInfo);
-				unit->posDirty_ = false;
+
+				//if the units has moved on the map update the render map
+				if (unit->posDirty_)
+				{
+					unitRenderer->UpdateEntity(unit->entityId, unit->spriteInfo);
+					unit->posDirty_ = false;
+				}
+
 			}
 
 		}

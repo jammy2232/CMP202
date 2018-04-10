@@ -155,6 +155,8 @@
     <ClCompile Include="AiState.cpp" />
     <ClCompile Include="BattleScene.cpp" />
     <ClCompile Include="Charge.cpp" />
+    <ClCompile Include="Death.cpp" />
+    <ClCompile Include="Fight.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="Charge.h" />
     <ClInclude Include="Coordsf.h" />
     <ClInclude Include="Coordsi.h" />
+    <ClInclude Include="Death.h" />
+    <ClInclude Include="Fight.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LoadingScene.h" />
