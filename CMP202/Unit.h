@@ -4,14 +4,14 @@
 #include <list>
 #include <mutex>
 #include <vector>
+#include <atomic>
+#include <memory>
 
 // Game Systems
 #include "PathFinder.h"
 #include "AiState.h"
 #include "RenderManager.h"
-#include "BattleScene.h"
-
-#include <memory>
+#include "UnitWorld.h"
 
 // Global Varialbles
 #include "GameSettings.h"
@@ -20,59 +20,82 @@ class Unit
 {
 public:
 
-	Unit(std::vector<Unit*>& board, int MapDimension);
-	~Unit();
-
-	// Declaration for team sprites
+	// Declaration for teams with int representing sprite id
 	enum TEAM { BLUE = 105, RED = 117 };
 
-	// Handling state information
+	// Construction
+	Unit(sf::Vector2i position, TEAM team, UnitWorld& world, AiState* initialState);
+	
+	// Destructor
+	~Unit();
+
+	// Handling state update and transition
 	void UpdateState(float dt);
 	void ChangeState(AiState* newState);
 
-	// Setting initial state
-	void SetInitialState(AiState* state);
-
-	// Access to the battleScene for seeing unit maps
-	std::vector<Unit*>& gameBoard;
-
 	// Navigation controls for path access (all thread safe)
 	void SetPath(std::list<sf::Vector2i> path);
+	std::list<sf::Vector2i> CopyPath();
 	void ResetPath();
 	void UpdateDestination();
-	sf::Vector2i GetDestination();
-	sf::Vector2i GetFinalDestination();
-	sf::Vector2f GetGoal();
-	bool WaitngPath();
-	int mapSize() { return mapDimension; }
-	std::list<sf::Vector2i> CopyPath();
+	bool PathEmpty();
 
-	// PositionUpdate
-	bool posDirty_;
-	bool Active_ = true;
+	// Access to path information (all thread safe)
+	sf::Vector2i GetTileDestination();
+	sf::Vector2i GetTileFinalDestination();
+	sf::Vector2f GetPointDestination();
+	sf::Vector2i GetCurrentTile();
+	void SetCurrentTile(sf::Vector2i tile);
 
-	// Rendering informaiton 
-	RenderObject spriteInfo;
-	int entityId;
+	// this is data set at a specific point (all thread safe)
+	std::atomic<bool> waitngPath;
 
-	// Position Information
-	sf::Vector2i currentTile;
+	// Position and rendering (assumed update required)
+	std::atomic<bool> posDirty_ = false;
+	std::atomic<bool> Active_ = true;
 
-	// Unit consistant state
-	int health = 100;
-	float attckCooldown = 1.0f;
-	Unit* currentTarget = nullptr;
-	TEAM team;
+	// Communication with rendering 
+	void SetSpriteInfo(RenderObject newspriteinfo);
+	RenderObject GetSrpiteInfo();
+	int GetEntityId();
+	void SetEntityId(int entitIdNumber);
+
+	// Impact Unit
+	void Damage(int Amount);
 
 private:
 
-	// AI Coontrol Information 
-	std::list<sf::Vector2i> path_;
-	int mapDimension = 0;
-	AiState* currentState_ = nullptr;
+	// Access to the world to see
+	UnitWorld& world_;
 
-	// ThreadSafety
+	// AI Control Information 
 	std::mutex path_lock;
+	std::list<sf::Vector2i> path_;
+
+	// path information and Position Information
+	std::mutex current_lock;
+	sf::Vector2i currentTile;
+	std::mutex pathState_lock;
+	sf::Vector2i tileDestination;
+	sf::Vector2i tileFinalDestination;
+	sf::Vector2f pointDestination;
+
+	// Current state controlling this units data
+	AiState* currentState_;
+
+	// Unit Data and stats
+	TEAM team_;
+	std::mutex damage_lock;
+	int health = 100;
+
+	// enemy target
+	sf::Vector2i currentTargetTile;
+	const Unit* currentTarget = nullptr;
+
+	// Unit Rendering informaiton 
+	std::mutex render_lock;
+	RenderObject spriteInfo;
+	int entityId;
 
 };
 

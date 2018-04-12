@@ -2,16 +2,20 @@
 
 // base class and units
 #include "Unit.h"
-#include "AiState.h"
+
+// SFML information
 #include "SFML\System\Vector2.hpp"
 
+// States and transitions
+#include "AiState.h"
 #include "Charge.h"
 
-//State links
+// Forward Declarations
 class Unit;
 
 class SearchAndDestoy : public AiState
 {
+
 public:
 
 	SearchAndDestoy(Unit* unit) { unit_ = unit; }

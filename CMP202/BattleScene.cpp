@@ -26,60 +26,11 @@ bool BattleScene::Init()
 	// create a render manager for the units
 	unitRenderer = new RenderManager(maxUnits, "Textures/medievalRTS_spritesheet");
 
-	// Populate the unit map
-	units_.assign(mapDimension*mapDimension, nullptr);
+	// Spawn units on the map 
+	unitsWorld_ = new UnitWorld(mapDimension, maxUnits, newMap.GetStaticMapData(), *unitRenderer);
 
-	// bool for team selecetion
-	bool team = false;
-
-	// Spawn Units in random locations
-	for (int i = 0; i < maxUnits; i++)
-	{
-
-		// Create a new unit
-		Unit* newUnit = new Unit(units_, mapDimension);
-
-		// set the initials state
-		newUnit->SetInitialState(new SearchAndDestoy(newUnit));
-
-		// Find a valid spawn location for the unity
-		sf::Vector2i coordinates;
-
-		// randomly select a starting value
-		coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
-
-		while (!(newMap.GetStaticMapData()[coordinates.y * mapDimension + coordinates.x] && units_[coordinates.y * mapDimension + coordinates.x] == nullptr))
-		{
-			coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
-
-		} 
-
-		// Apply the details to the new unit
-		newUnit->currentTile = coordinates;
-
-		if (team)
-		{
-			newUnit->team = Unit::TEAM::BLUE;
-			team = false;
-		}
-		else
-		{
-			newUnit->team = Unit::TEAM::RED;
-			team = true;
-		}
-		
-		newUnit->spriteInfo.id = (int)newUnit->team;
-		newUnit->spriteInfo.x = (float)newUnit->currentTile.x * TILESIZE;
-		newUnit->spriteInfo.y = (float)newUnit->currentTile.y * TILESIZE;
-		
-		// Place the unit on the map 
-		assert(units_[coordinates.y * mapDimension + coordinates.x] == nullptr);
-		units_[newUnit->currentTile.y * mapDimension + newUnit->currentTile.x] = newUnit;
-
-		// initial sync with the renderer 
-		newUnit->entityId = unitRenderer->AddEntity(newUnit->spriteInfo);
-
-	}
+	// Get a reference to all the created units
+	units_ = unitsWorld_->GetUnitList();
 
 	// return to show error free;
 	return true;
@@ -140,23 +91,17 @@ void BattleScene::Update(float delta_time)
 	for (auto unit : units_)
 	{
 
+		unit->UpdateState(delta_time);
+
 		// check there is a valid unit to process
 		if (unit)
 		{
 
-			unit->UpdateState(delta_time);
-
-			// check there is a valid unit to process
-			if (unit)
+			//if the units has moved on the map update the render map
+			if (unit->posDirty_)
 			{
-
-				//if the units has moved on the map update the render map
-				if (unit->posDirty_)
-				{
-					unitRenderer->UpdateEntity(unit->entityId, unit->spriteInfo);
-					unit->posDirty_ = false;
-				}
-
+				unitRenderer->UpdateEntity(unit->GetEntityId(), unit->GetSrpiteInfo());
+				unit->posDirty_ = false;
 			}
 
 		}
@@ -225,6 +170,7 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 
 	// Render the borders fro the minimap
 	{
+
 		std::unique_lock<std::mutex> lock(windowEditor_);
 		// get the current desktop
 		sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();

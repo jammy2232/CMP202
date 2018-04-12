@@ -15,14 +15,11 @@
 // Generation and management systems
 #include "RenderManager.h"
 #include "MapGenerator.h"
-
-// Initial unit state
-#include "SearchAndDestoy.h"
+#include "UnitWorld.h"
 
 // Forward delcarations
 class PathFinder;
 class Unit;
-enum TEAM;
 
 class BattleScene :	public Scene
 {
@@ -45,7 +42,7 @@ private:
 
 	// Map size information 
 	const int mapDimension = 50;
-	const int maxUnits = 400;
+	const int maxUnits = 200;
 
 	// Renderer Managers
 	RenderManager* tileMapRenderer = nullptr;
@@ -58,6 +55,7 @@ private:
 	void SetUpViewWindows();
 
 	// Create a vector to store all the unit locations
+	UnitWorld* unitsWorld_;
 	std::vector<Unit*> units_;
 
 	// Thread safety
