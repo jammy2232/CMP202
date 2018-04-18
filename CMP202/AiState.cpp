@@ -19,13 +19,16 @@ bool AiState::MoveTheUnit(float dt)
 
 		if (MovePossible())
 		{
+			// Can actually move
 			blocked = false;
 			move_ = PREPARE;
+			// still atttempting move
 			return false;
 		}
 		else
 		{
 			move_ = BLOCKED;
+			// still atttempting move
 			return false;
 		}
 
@@ -33,8 +36,10 @@ bool AiState::MoveTheUnit(float dt)
 
 	case PREPARE:
 
+		// Prpare
 		calculateMovementVector();
 		move_ = MOVING;
+		// still atttempting move
 		return false;
 
 		break;
@@ -43,7 +48,9 @@ bool AiState::MoveTheUnit(float dt)
 
 		if (incrementMovement(dt))
 		{
+			// reset movement
 			move_ = CHECK;
+			// move complete
 			return true;
 		}
 
@@ -56,6 +63,7 @@ bool AiState::MoveTheUnit(float dt)
 
 			// waiting to see if the space becomes available in a certain time
 			move_ = CHECK;
+			// still atttempting move
 			return false;
 
 		}
@@ -65,6 +73,7 @@ bool AiState::MoveTheUnit(float dt)
 			blocked = true;
 			// Reset all the logic
 			move_ = CHECK;
+			// still atttempting move
 			return false;
 
 		}
@@ -73,7 +82,7 @@ bool AiState::MoveTheUnit(float dt)
 
 	}
 
-
+	// Catch all 
 	return false;
 
 }
@@ -82,12 +91,13 @@ bool AiState::MoveTheUnit(float dt)
 void AiState::calculateMovementVector()
 {
 
-	// calculate movement 
-	float legnth = std::sqrtf(std::powf((unit_->GetGoal().x - unit_->spriteInfo.x), 2.0f) + std::powf((unit_->GetGoal().y - unit_->spriteInfo.y), 2.0f));
-	float xdir = (unit_->GetGoal().x - unit_->spriteInfo.x) / legnth;
-	float ydir = (unit_->GetGoal().y - unit_->spriteInfo.y) / legnth;
-	// Calculate the movement vector
-	forwardDirection = sf::Vector2f(xdir, ydir);
+	// calculate forward direction 
+	sf::Vector2f direction = unit_->GetPointDestination() - unit_->GetCurrentPoint();
+	// Normailise the vector vector/length
+	forwardDirection = direction / (std::sqrtf(std::powf(direction.x, 2.0f) + std::powf(direction.y, 2.0f)));
+
+	// Check that the unit never moves more than one space (or at least is calculated to)
+	// assert(direction.x <= TILESIZE &&  direction.x >= -TILESIZE && direction.y <= TILESIZE && direction.y >= -TILESIZE);
 
 }
 
@@ -95,25 +105,22 @@ void AiState::calculateMovementVector()
 bool AiState::MovePossible()
 {
 
-	// Is the next path step available
-	if (!(unit_->gameBoard)[currentDestination.y * unit_->mapSize() + currentDestination.x])
+	if (unit_->world_.CheckForUnit(sf::Vector2i(unit_->GetTileDestination())))
 	{
 
-		// Updates the tile map
-		assert((unit_->gameBoard)[currentDestination.y * unit_->mapSize() + currentDestination.x] == nullptr);
-
-		// Set the new tile to taken
-		(unit_->gameBoard)[currentDestination.y * unit_->mapSize() + currentDestination.x] = unit_;
-		// release the old tile
-		(unit_->gameBoard)[unit_->currentTile.y * unit_->mapSize() + unit_->currentTile.x] = nullptr;
-
-		// returns success
-		return true;
+		// If there is a unit in the destination of this unit the movement isn't possible 
+		return false;
 
 	}
 
-	// Move isn't possible
-	return false;
+	// if it's possible update the world with this units intention to move
+	// Set the new tile to taken
+	unit_->world_.SetUnitOnTile(unit_, unit_->GetTileDestination());
+	// release the old tile
+	unit_->world_.FreeUnitFromTile(unit_->GetCurrentTile());
+
+	// flag success
+	return true;
 
 }
 
@@ -121,65 +128,30 @@ bool AiState::MovePossible()
 bool AiState::incrementMovement(float dt)
 {
 
-	// bools to check
-	bool xComplete = false;
-	bool yComplete = false;
+	// Move the unit in the direction of travel
+	unit_->SetScreenPosition(unit_->GetCurrentPoint() + forwardDirection * UNITSPEED * dt);
 
-	// Check if you have reached the x destination
-	if (forwardDirection.x != 0.0f)
+	// Check if the unit has reached the destination 
+
+	// whats the current vector direction
+	sf::Vector2f currentDirection = unit_->GetPointDestination() - unit_->GetCurrentPoint();
+
+	// Check if thedot product to see the unit is passed the point 
+	if ((forwardDirection.x * currentDirection.x + forwardDirection.y * currentDirection.y) < 0.0f)
 	{
 
-		unit_->spriteInfo.x += forwardDirection.x * UNITSPEED * dt * speedMod_;
-
-		if (std::abs(unit_->spriteInfo.x - unit_->GetGoal().x) < UNITSPEED * dt * speedMod_)
-		{
-			unit_->spriteInfo.x = unit_->GetGoal().x;
-			xComplete = true;
-		}
-	}
-	else
-	{
-		xComplete = true;
-	}
-
-	// Check if you have reached the y destination
-	if (forwardDirection.y != 0.0f)
-	{
-
-		unit_->spriteInfo.y += forwardDirection.y * UNITSPEED * dt * speedMod_;
-
-		if (std::abs(unit_->spriteInfo.y - unit_->GetGoal().y) < UNITSPEED * dt * speedMod_)
-		{
-			unit_->spriteInfo.y = unit_->GetGoal().y;
-			yComplete = true;
-		}
-	}
-	else
-	{
-		yComplete = true;
-	}
-
-
-	// Flag for render update 
-	unit_->posDirty_ = true;
-
-
-	// Transition to check for enemies each step
-	if (yComplete && xComplete)
-	{
-		unit_->spriteInfo.y = unit_->GetGoal().y;
-		unit_->spriteInfo.x = unit_->GetGoal().x;
-		unit_->currentTile = unit_->GetDestination();
+		// the unit is pasted the intended position so therefore set the position
+		unit_->SetScreenPosition(unit_->GetPointDestination());
+		unit_->SetCurrentTile(unit_->GetTileDestination());
 		unit_->UpdateDestination();
 		return true;
+
 	}
 
-	// Movement not complete 
+	// otherwise the move is not complete
 	return false;
 
 }
-
-
 
 
 bool AiState::wait(float dt)
@@ -194,6 +166,7 @@ bool AiState::wait(float dt)
 		return false;
 	}
 
+	// still waiting
 	return true;
 
 }

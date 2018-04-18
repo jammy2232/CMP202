@@ -35,13 +35,14 @@ UnitWorld::UnitWorld(int mapDimension, int NumberOfUnits, std::vector<bool>& Sta
 		}
 
 		// Create a new unit
-		Unit* newUnit = new Unit(coordinates, teamSelection, *this, new SearchAndDestoy(newUnit));
+		Unit* newUnit = new Unit(coordinates, teamSelection, *this);
+		newUnit->ChangeState(new SearchAndDestoy(newUnit));
 
 		// Place the unit on the map 
 		unitMap_[newUnit->GetCurrentTile().y * mapDimension + newUnit->GetCurrentTile().x] = newUnit;
 
 		// initial sync with the renderer 
-		newUnit->SetEntityId(unitRenderer.AddEntity(newUnit->GetSrpiteInfo()));
+		newUnit->SetEntityId(unitRenderer.AddEntity(newUnit->GetSpriteInfo()));
 
 	}
 
@@ -60,7 +61,7 @@ bool UnitWorld::CheckForUnit(sf::Vector2i tile)
 	// Lock the data Access
 	std::unique_lock<std::mutex> lock(lockmap_);
 
-	if (unitMap_[tile.y * mapDimension_ + tile.x] != nullptr)
+	if (unitMap_[tile.y * mapDimension_ + tile.x] == nullptr)
 		return false;
 
 	// otherwise a unit exists
@@ -103,11 +104,33 @@ std::vector<Unit*> UnitWorld::GetUnitList()
 }
 
 
-int UnitWorld::GetMapDimension()
+bool UnitWorld::SetUnitOnTile(Unit* unit, sf::Vector2i tile)
 {
-	
-	// Lock the data access
+
+	// Lock the data access 
+	std::unique_lock<std::mutex> lock(lockmap_);
+
+	// fail if the tile is currently occupied
+	if (unitMap_[tile.y * mapDimension_ + tile.x])
+	{
+		return false;
+	}
+
+	// otherwise add the unit
+	unitMap_[tile.y * mapDimension_ + tile.x] = unit;
+	return true;
 
 
+}
+
+
+void UnitWorld::FreeUnitFromTile(sf::Vector2i tile)
+{
+
+	// Lock the data access 
+	std::unique_lock<std::mutex> lock(lockmap_);
+
+	// Remove the unit
+	unitMap_[tile.y * mapDimension_ + tile.x] = nullptr;
 
 }

@@ -77,6 +77,12 @@ PathFinder::~PathFinder()
 void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destination)
 {
 
+	// Check there isn't already a path requested
+	if (unit->waitngPath)
+	{
+		return;
+	}
+
 	// Lock the queue (as more than one pathfinding worker thread can exist)
 	std::unique_lock<std::mutex> lock(queue);
 
@@ -91,6 +97,9 @@ void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destin
 
 	// Add it to the queueu
 	taskQueue_.push(request);
+
+	// Update the unit 
+	unit->waitngPath = true;
 
 }
 
@@ -307,6 +316,9 @@ void PathFinder::Work()
 
 		// Complete the task
 		task.unit->SetPath(findPath(task.start, task.destination));
+
+		// Flag the path complete
+		task.unit->waitngPath = false;
 
 	}
 

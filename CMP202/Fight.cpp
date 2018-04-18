@@ -5,6 +5,7 @@ Fight::~Fight()
 {
 }
 
+
 void Fight::Enter()
 {
 
@@ -13,6 +14,7 @@ void Fight::Enter()
 
 }
 
+
 void Fight::Step(float dt)
 {
 
@@ -20,30 +22,38 @@ void Fight::Step(float dt)
 	attackTimer += dt;
 
 	// Check if the unit is dead 
-	if (unit_->health < 0)
+	if (unit_->GetHealth() < 0)
 	{
+
+		// The unit is dead
 		unit_->ChangeState(new Death(unit_));
+
+		// No more actions required
 		return;
+
 	}
 
-	// If the attack
-	if (attackTimer > unit_->attckCooldown)
+	// Check the enemy is still valid
+	if (!unit_->world_.GetUnitInfo(unit_->GetCurrentTargetTile()))
+	{
+
+		// The enemy unit is gone
+		unit_->ChangeState(new SearchAndDestoy(unit_));
+		return;
+
+	}
+
+	// Attack the unit
+	if (attackTimer > 1.0f)
 	{
 		
-		unit_->currentTarget->health -= 20;
+		Projectile::SpawnProjectile(unit_->GetCurrentPoint(), unit_->GetCurrentTarget()->GetCurrentPoint(), unit_->GetCurrentTargetTile());
 		attackTimer = 0.0f;
 
 	}
 
-	if (unit_->currentTarget->health < 0)
-	{
-		unit_->ResetPath();
-		unit_->ChangeState(new SearchAndDestoy(unit_));
-		return;
-	}
-
-
 }
+
 
 void Fight::Exit()
 {

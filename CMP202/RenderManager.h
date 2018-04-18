@@ -16,11 +16,10 @@
 struct RenderObject
 {
 
-	RenderObject(float x_ = 0.0f, float y_ = 0.0f, int spriteId_ = -1): x(x_), y(y_), id(spriteId_) {}
+	RenderObject(sf::Vector2f position = sf::Vector2f(0.0f, 0.0f), int spriteId_ = -1): screen_position(position), id(spriteId_) {}
 
 	// objects location
-	float x = 0.0f;
-	float y = 0.0f;
+	sf::Vector2f screen_position;
 
 	// sprite Id (-1 is the default to draw nothing)
 	int id = -1;

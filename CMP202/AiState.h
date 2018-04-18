@@ -23,8 +23,6 @@ protected:
 	// functions fundamental and data to all states
 	bool MoveTheUnit(float dt);
 	bool MoveBlocked() { return blocked; }
-	sf::Vector2i currentDestination;
-	float speedMod_ = 1.0f;
 
 private:
 

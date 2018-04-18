@@ -119,8 +119,7 @@ RenderManager* MapGenerator::CreateRenderSystem(std::string filename)
 			RenderObject object;
 
 			// Set it's x and y poition and sprite id
-			object.x = x * TILESIZE;
-			object.y = y * TILESIZE;
+			object.screen_position = sf::Vector2f(x * TILESIZE, y * TILESIZE);
 			object.id = staticTileIdMap_[y * mapsize + x];
 
 			// Store the object

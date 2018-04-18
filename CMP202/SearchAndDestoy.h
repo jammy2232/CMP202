@@ -31,12 +31,5 @@ private:
 	Unit* CheckForEnemies(int range);
 	sf::Vector2i MoveToRandomLocation(int distance);	
 
-	// Internal data
-	sf::Vector2i randomLocation = sf::Vector2i(-1, -1);
-
-	// Internal states 
-	enum STATE { ENEMYCHECK, PATHWAITING, MOVING };
-	STATE state_ = ENEMYCHECK;
-
 };
 

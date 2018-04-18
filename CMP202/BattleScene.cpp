@@ -16,6 +16,7 @@ bool BattleScene::Init()
 
 	// Start the pathfinder thread
 	pathfinder = new PathFinder(newMap.GetStaticMapData(), mapDimension);
+	pathfinder1 = new PathFinder(newMap.GetStaticMapData(), mapDimension);
 
 	// Setup the view windows for main and minimaps
 	SetUpViewWindows();
@@ -31,6 +32,9 @@ bool BattleScene::Init()
 
 	// Get a reference to all the created units
 	units_ = unitsWorld_->GetUnitList();
+
+	// Set the unit world
+	Projectile::SetWorld(unitsWorld_);
 
 	// return to show error free;
 	return true;
@@ -91,6 +95,7 @@ void BattleScene::Update(float delta_time)
 	for (auto unit : units_)
 	{
 
+		// Update the state
 		unit->UpdateState(delta_time);
 
 		// check there is a valid unit to process
@@ -100,13 +105,16 @@ void BattleScene::Update(float delta_time)
 			//if the units has moved on the map update the render map
 			if (unit->posDirty_)
 			{
-				unitRenderer->UpdateEntity(unit->GetEntityId(), unit->GetSrpiteInfo());
+				unitRenderer->UpdateEntity(unit->GetEntityId(), unit->GetSpriteInfo());
 				unit->posDirty_ = false;
 			}
 
 		}
 
 	}
+
+
+	Projectile::Update(delta_time);
 
 }
 
@@ -138,6 +146,13 @@ void BattleScene::Render(sf::RenderWindow & window)
 		}
 	}
 
+	// Render Arrows
+	 {
+	 	std::unique_lock<std::mutex> lock(windowEditor_);
+		Projectile::Render(window);
+	}
+
+
 }
 
 
@@ -160,6 +175,7 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 	}
 
 	// Render Units
+	/*
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
 		for (int unit = 0; unit < unitRenderer->getNumberOfEntities(); unit++)
@@ -167,6 +183,7 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 			window.draw(unitRenderer->RenderSprite(unit));
 		}
 	}
+	*/
 
 	// Render the borders fro the minimap
 	{

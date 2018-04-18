@@ -72,28 +72,25 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="Charge.cpp">
-      <Filter>Source Files\AIUnits</Filter>
+    <ClCompile Include="UnitWorld.cpp">
+      <Filter>Source Files\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="Death.cpp">
+    <ClCompile Include="Charge.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
     <ClCompile Include="Fight.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="UnitWorld.cpp">
-      <Filter>Source Files\Helper</Filter>
+    <ClCompile Include="Death.cpp">
+      <Filter>Source Files\AIUnits</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PathFinder.h">
       <Filter>Header Files\Pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="Coordsf.h">
-      <Filter>Header Files\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Coordsi.h">
-      <Filter>Header Files\Helper</Filter>
     </ClInclude>
     <ClInclude Include="Semaphor.h">
       <Filter>Header Files\Helper</Filter>
@@ -128,17 +125,20 @@
     <ClInclude Include="MapGenerator.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Charge.h">
-      <Filter>Header Files\AIUnits</Filter>
+    <ClInclude Include="UnitWorld.h">
+      <Filter>Header Files\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Death.h">
+    <ClInclude Include="Charge.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
     <ClInclude Include="Fight.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
-    <ClInclude Include="UnitWorld.h">
-      <Filter>Header Files\Helper</Filter>
+    <ClInclude Include="Death.h">
+      <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

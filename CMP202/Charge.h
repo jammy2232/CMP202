@@ -24,10 +24,5 @@ private:
 	// intenal function 
 	bool CheckPathIsValid();
 
-	// Internal states 
-	enum STATE { PATHFINDNIG, MOVING };
-	STATE state_ = PATHFINDNIG;
-
-
 };
 

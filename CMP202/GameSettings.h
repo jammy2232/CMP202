@@ -7,3 +7,4 @@
 #define UNITSPEED 60.0f
 #define UNITHEALTH 100
 #define UNITATTACK 10
+#define PROJECTILESPEED 120.0f

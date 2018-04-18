@@ -3,6 +3,7 @@
 
 #include "AiState.h"
 #include "Unit.h"
+#include "Projectile.h"
 
 
 class Fight : public AiState

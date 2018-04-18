@@ -171,7 +171,7 @@ const sf::Sprite& RenderManager::RenderSprite(int index)
 	std::unique_lock<std::mutex> entity(entityAccessor);
 
 	// Update the sprite 
-	sprites_[entities_[index].id].setPosition(entities_[index].x, entities_[index].y);
+	sprites_[entities_[index].id].setPosition(entities_[index].screen_position);
 
 	// return access for the sprite to be drawn
 	return sprites_[entities_[index].id];

@@ -41,21 +41,27 @@ public:
 private:
 
 	// Map size information 
-	const int mapDimension = 50;
-	const int maxUnits = 200;
+	const int mapDimension = 60;
+	const int maxUnits = 300;
 
 	// Renderer Managers
 	RenderManager* tileMapRenderer = nullptr;
 	RenderManager* unitRenderer = nullptr;
+	RenderManager* arrowRenderer = nullptr;
 
 	// Pathfiding system
-	PathFinder* pathfinder;
+	PathFinder* pathfinder = nullptr;
+	PathFinder* pathfinder1 = nullptr;
+
+	// Unit update threads
+	std::thread* unitupdate0 = nullptr;
+	std::thread* unitupdate1 = nullptr;
 
 	// Loading and preperation functions
 	void SetUpViewWindows();
 
 	// Create a vector to store all the unit locations
-	UnitWorld* unitsWorld_;
+	UnitWorld* unitsWorld_ = nullptr;
 	std::vector<Unit*> units_;
 
 	// Thread safety

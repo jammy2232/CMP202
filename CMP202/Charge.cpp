@@ -12,11 +12,8 @@ void Charge::Enter()
 	// Clear any current path
 	unit_->ResetPath();
 
-	// update the speed 
-	speedMod_ = 3.0f;
-
 	// Request a path to the enemylocaton
-	PathFinder::RequestPath(unit_, unit_->currentTile, unit_->currentTarget->currentTile);
+	PathFinder::RequestPath(unit_, unit_->GetCurrentTile(), unit_->GetCurrentTargetTile());
 
 }
 
@@ -25,97 +22,73 @@ void Charge::Step(float dt)
 {
 
 	// Check if the unit is dead 
-	if (unit_->health < 0)
+	if (unit_->GetHealth() < 0)
 	{
+
+		// The unit is dead
 		unit_->ChangeState(new Death(unit_));
+
+		// No more actions required
 		return;
+
 	}
 
-
-	// Manage the state
-	switch (state_)
+	// Check if the random path has been recieved
+	if (unit_->waitngPath)
 	{
 
-	case PATHFINDNIG:
-
-		// Check the unit is still valid and on the current path
-		if (!unit_->Active_)
-		{
-			unit_->ResetPath();
-			unit_->currentTarget = nullptr;
-			unit_->ChangeState(new SearchAndDestoy(unit_));
-			return;
-		}
-
-		// Wait for the path
-		if (!unit_->WaitngPath())
-		{
-
-			// get the first step of the destination
-			currentDestination = unit_->GetDestination();
-
-			// start moving 
-			state_ = MOVING;
-
-		}
-
+		// if not do Nothing
 		return;
 
-	break;
+	}
+	else if (unit_->PathEmpty())
+	{
+		// If you have a path but it's empty You reach where the enemy was and there not there - reset this to search
+		unit_->ChangeState(new SearchAndDestoy(unit_));
+		return;
 
-	case MOVING:
+	}
+	else
+	{
 
-		// Make any initial calculations and checks
+		if (MoveBlocked())
+		{
+
+			// Check if it's the enemy in the adjacent tile
+			if (unit_->world_.GetUnitInfo(unit_->GetTileDestination()) == unit_->GetCurrentTarget())
+			{
+
+				// Update the reference to your enemy
+				unit_->SetCurrentTarget(unit_->world_.GetUnitInfo(unit_->GetTileDestination()));
+
+				// Transision to fighting
+				unit_->ChangeState(new Fight(unit_));
+
+				// no more action required
+				return;
+
+			}
+
+		}
+
+		// Move the unit a block
 		if (MoveTheUnit(dt))
 		{
 
-			// Check the unit is still valid and on the current path
-			if (!unit_->Active_)
+			// Validate the enemy is still on the path
+			if (CheckPathIsValid())
 			{
-				unit_->ResetPath();
-				unit_->currentTarget = nullptr;
+				// Keep moving along it
+				return;
+			}
+			else
+			{
+				// target lost and Go back to hunting
 				unit_->ChangeState(new SearchAndDestoy(unit_));
 				return;
 			}
 
-			// Check the unit is still on the path 
-			if(!CheckPathIsValid())
-			{
-			
-				PathFinder::RequestPath(unit_, unit_->currentTile, unit_->currentTarget->currentTile);
-				state_ = PATHFINDNIG;
-				return;
-
-			}
-
-			// get the first step of the destination
-			currentDestination = unit_->GetDestination();
-
 		}
-		else
-		{
-
-			// Check if the target is in the next path
-			if (unit_->gameBoard[unit_->GetDestination().y * unit_->mapSize() + unit_->GetDestination().x] == unit_->currentTarget)
-			{
-				// Move to attack
-				unit_->ChangeState(new Fight(unit_));
-				return;
-			}
-
-			// If a significant time has passed
-			if (MoveBlocked())
-			{
-
-				// The unit can't get to that enemy atm
-				unit_->ChangeState(new SearchAndDestoy(unit_));
-				return;
-
-			}
-
-		}
-
-		break;
 
 	}
 
@@ -125,8 +98,6 @@ void Charge::Step(float dt)
 void Charge::Exit()
 {
 
-	// update the speed 
-	speedMod_ = 1.0f;
 
 
 }
@@ -142,12 +113,18 @@ bool Charge::CheckPathIsValid()
 	// Check that the unit is till on the path
 	for (auto step : path)
 	{
-		if (unit_->gameBoard[step.y*unit_->mapSize() + step.x] == unit_->currentTarget)
+		if (unit_->world_.GetUnitInfo(step) == unit_->GetCurrentTarget())
 		{
+
+			// Update the reference to your enemy
+			unit_->SetCurrentTarget(unit_->world_.GetUnitInfo(step));
+			//flag the path is good
 			pathGoodFlag = true;
+
 		}
 	}
 
 	return pathGoodFlag;
 
 }
+

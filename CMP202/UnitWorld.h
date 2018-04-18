@@ -22,6 +22,10 @@ public:
 	Unit* GetUnitInfo(sf::Vector2i tile);
 	std::vector<Unit*> GetUnitList();
 
+	// Updating the world
+	bool SetUnitOnTile(Unit* unit, sf::Vector2i tile);
+	void FreeUnitFromTile(sf::Vector2i tile);
+
 	// Get Map Information 
 	int GetMapDimension() { return mapDimension_; }
 
