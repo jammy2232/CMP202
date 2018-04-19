@@ -46,7 +46,7 @@ private:
 	std::atomic<int> id = 0;
 
 	// bools for control
-	std::atomic_bool active = true;
+	std::atomic<bool> active = true;
 
 };
 

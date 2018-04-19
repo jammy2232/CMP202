@@ -12,7 +12,7 @@ Projectile::Projectile(sf::Vector2f Start, sf::Vector2f End, sf::Vector2i Target
 	currentInfo.screen_position = Start;
 
 	// Calculate the direction to be applied 
-	direction = (Start - End);
+	direction = (End - Start);
 
 	// Normalise it
 	direction = direction/(std::sqrtf(std::powf(direction.x, 2.0f) + std::powf(direction.y, 2.0f)));
@@ -73,15 +73,19 @@ void Projectile::Update(float dt)
 	{
 
 		// Update the state
-		arrows->UpdateArrow(dt);
-
-		// update hte renderer
-		render->UpdateEntity(arrows->getId(), arrows->GetSpriteInfo());
-
-		if (arrows->active == false)
+		if (arrows->active)
 		{
-			delete arrows;
-			projectiles.remove(arrows);
+			arrows->UpdateArrow(dt);
+
+			// update hte renderer
+			render->UpdateEntity(arrows->getId(), arrows->GetSpriteInfo());
+		}
+
+		if (!arrows->active)
+		{
+			// projectiles.remove(arrows);
+			// delete arrows;
+
 		}
 
 	}
