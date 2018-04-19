@@ -1,7 +1,7 @@
 #include "Unit.h"
 
 
-Unit::Unit(sf::Vector2i position, TEAM team, UnitWorld & world) : world_(world), team_(team)
+Unit::Unit(sf::Vector2i position, TEAM team) : team_(team)
 {
 
 	// Set the current tile position
@@ -22,14 +22,16 @@ Unit::~Unit()
 }
 
 
-void Unit::UpdateState(float dt)
+SpriteObject& Unit::Update(float dt)
 {
 
-	// Lock access to modifying the state
-	// std::unique_lock<std::mutex> lock(state);
-
+	// If there is a current state - Update it
 	if (currentState_)
 		currentState_->Step(dt);
+
+	// Return the object to render
+	return sprite_;
+
 }
 
 

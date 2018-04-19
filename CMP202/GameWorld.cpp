@@ -1,7 +1,7 @@
-#include "UnitWorld.h"
+#include "GameWorld.h"
 
 
-UnitWorld::UnitWorld(int mapDimension, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer): mapDimension_(mapDimension)
+GameWorld::GameWorld(int mapDimension, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer): mapDimension_(mapDimension)
 {
 
 	// Populate the unit map with placeholder positions
@@ -50,12 +50,12 @@ UnitWorld::UnitWorld(int mapDimension, int NumberOfUnits, std::vector<bool>& Sta
 }
 
 
-UnitWorld::~UnitWorld()
+GameWorld::~GameWorld()
 {
 }
 
 
-bool UnitWorld::CheckForUnit(sf::Vector2i tile)
+bool GameWorld::CheckForUnit(sf::Vector2i tile)
 {
 
 	// Lock the data Access
@@ -70,7 +70,7 @@ bool UnitWorld::CheckForUnit(sf::Vector2i tile)
 }
 
 
-Unit* UnitWorld::GetUnitInfo(sf::Vector2i tile)
+Unit* GameWorld::GetUnitInfo(sf::Vector2i tile)
 {
 
 	// Lock the data access 
@@ -82,7 +82,7 @@ Unit* UnitWorld::GetUnitInfo(sf::Vector2i tile)
 }
 
 
-std::vector<Unit*> UnitWorld::GetUnitList()
+std::vector<Unit*> GameWorld::GetUnitList()
 {
 
 	// setup a temporary store
@@ -104,7 +104,7 @@ std::vector<Unit*> UnitWorld::GetUnitList()
 }
 
 
-bool UnitWorld::SetUnitOnTile(Unit* unit, sf::Vector2i tile)
+bool GameWorld::SetUnitOnTile(Unit* unit, sf::Vector2i tile)
 {
 
 	// Lock the data access 
@@ -124,7 +124,7 @@ bool UnitWorld::SetUnitOnTile(Unit* unit, sf::Vector2i tile)
 }
 
 
-void UnitWorld::FreeUnitFromTile(sf::Vector2i tile)
+void GameWorld::FreeUnitFromTile(sf::Vector2i tile)
 {
 
 	// Lock the data access 

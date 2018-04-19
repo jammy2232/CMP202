@@ -1,5 +1,8 @@
 #pragma once
 
+// Global Variables - These are constant for the development environment
+#include "GameSettings.h"
+
 // std funciton/data includes
 #include <list>
 #include <mutex>
@@ -8,31 +11,29 @@
 #include <memory>
 
 // Game Systems
+#include "GameObject.h"
+#include "SpriteRenderer.h"
 #include "PathFinder.h"
 #include "AiState.h"
-#include "RenderManager.h"
-#include "UnitWorld.h"
+#include "GameWorld.h"
 
-// Global Varialbles
-#include "GameSettings.h"
 
-class UnitWorld;
-
-class Unit
+class Unit : public GameObject
 {
 public:
 
-	// Declaration for teams with int representing sprite id
-	enum TEAM { BLUE = 105, RED = 117 };
+	// Declaration for teams with int representing sprite id for the specific team
+	enum TEAM { NONE = 0, BLUE = 105, RED = 117 };
 
 	// Construction
-	Unit(sf::Vector2i position, TEAM team, UnitWorld& world);
-	
-	// Destructor
+	Unit(sf::Vector2i position = sf::Vector2i(0,0), TEAM team = NONE);
 	~Unit();
 
 	// Handling state update and transition
-	void UpdateState(float dt);
+	SpriteObject& Update(float delta_time);
+
+
+	// Handling update of the states
 	void ChangeState(AiState* newState);
 
 	// Navigation controls for path access (all thread safe)
@@ -50,20 +51,8 @@ public:
 	sf::Vector2f GetCurrentPoint();
 	void SetCurrentTile(sf::Vector2i tile);
 
-	// this is data set at a specific point (all thread safe)
-	std::atomic<bool> waitngPath;
-
-	// Position and rendering (assumed update required)
-	std::atomic<bool> posDirty_ = false;
-	std::atomic<bool> Active_ = true;
-
-	// Communication with rendering 
-	void SetSpriteInfo(RenderObject newspriteinfo);
-	void SetScreenPosition(sf::Vector2f position);
-	void SetSpriteId(int id);
-	RenderObject GetSpriteInfo();
-	int GetEntityId();
-	void SetEntityId(int entitIdNumber);
+	// This is a thread safe flag to track path finding requests
+	std::atomic<bool> waitingPathRequestFlag;
 
 	// Impact Unit
 	void Damage(int Amount);
@@ -99,15 +88,9 @@ private:
 	TEAM team_;
 	std::atomic<int> health = 100;
 
-	// enemy target
-	std::mutex enemy;
-	sf::Vector2i currentTargetTile;
-	Unit* currentTarget = nullptr;
 
 	// Unit Rendering informaiton 
-	std::mutex render_lock;
-	RenderObject spriteInfo;
-	int entityId;
+	SpriteObject sprite_;
 
 };
 

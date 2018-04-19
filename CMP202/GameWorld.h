@@ -10,12 +10,12 @@
 
 // Purpose is to provide thread safe access to the map of unit positions
 
-class UnitWorld
+class GameWorld
 {
 public:
 
-	UnitWorld(int mpatDimensions, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer);
-	~UnitWorld();
+	GameWorld(int mpatDimensions, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer);
+	~GameWorld();
 
 	// Get Unit information
 	bool CheckForUnit(sf::Vector2i tile);

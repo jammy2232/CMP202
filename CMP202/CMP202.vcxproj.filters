@@ -69,9 +69,6 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="UnitWorld.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Charge.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
@@ -86,6 +83,15 @@
     </ClCompile>
     <ClCompile Include="SpriteRenderer.cpp">
       <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectManager.cpp">
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +128,6 @@
     <ClInclude Include="MapGenerator.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="UnitWorld.h">
-      <Filter>Header Files\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Charge.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
@@ -139,6 +142,15 @@
     </ClInclude>
     <ClInclude Include="SpriteRenderer.h">
       <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectManager.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
