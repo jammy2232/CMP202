@@ -1,51 +1,16 @@
 #include "GameWorld.h"
 
 
-GameWorld::GameWorld(int mapDimension, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer): mapDimension_(mapDimension)
+GameWorld::GameWorld(int mapDimension): mapDimension_(mapDimension)
 {
 
-	// Populate the unit map with placeholder positions
-	unitMap_.assign(mapDimension*mapDimension, nullptr);
+	// Allocate the memory for each layer of the map
+	PathMap_.assign(mapDimension_*mapDimension_, true);
+	TileMap_.assign(mapDimension_*mapDimension_, SpriteObject());
+	unitMap_.assign(mapDimension_*mapDimension_, nullptr);
 
-	// variable for team selecetion
-	Unit::TEAM teamSelection = Unit::TEAM::BLUE;
-
-	// Spawn Units in random locations
-	for (int i = 0; i < NumberOfUnits; i++)
-	{
-
-		// Find a valid random spawn location for the unit
-		sf::Vector2i coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
-
-		// if the first is not valid - Keep attempting new locaitons until a valid one is found
-		while (!(StaticMap[coordinates.y * mapDimension + coordinates.x] && unitMap_[coordinates.y * mapDimension + coordinates.x] == nullptr))
-		{
-			coordinates = sf::Vector2i(rand() % (mapDimension - 1), rand() % (mapDimension - 1));
-
-		}
-
-		// Assign a team (evenly)
-		if (teamSelection == Unit::TEAM::BLUE)
-		{
-			teamSelection = Unit::TEAM::RED;
-		}
-		else
-		{
-			teamSelection = Unit::TEAM::BLUE;
-		}
-
-		// Create a new unit
-		Unit* newUnit = new Unit(coordinates, teamSelection, *this);
-		newUnit->ChangeState(new SearchAndDestoy(newUnit));
-
-		// Place the unit on the map 
-		unitMap_[newUnit->GetCurrentTile().y * mapDimension + newUnit->GetCurrentTile().x] = newUnit;
-
-		// initial sync with the renderer 
-		newUnit->SetEntityId(unitRenderer.AddEntity(newUnit->GetSpriteInfo()));
-
-	}
-
+	// Randomly generate a new map 
+	GenerateRandomWolrd();
 
 }
 
@@ -132,5 +97,126 @@ void GameWorld::FreeUnitFromTile(sf::Vector2i tile)
 
 	// Remove the unit
 	unitMap_[tile.y * mapDimension_ + tile.x] = nullptr;
+
+}
+
+
+sf::Vector2i GameWorld::GetRandomFreeTile()
+{
+
+	// Lock the data access 
+	std::unique_lock<std::mutex> lock(lockmap_);
+
+	// define the map limit
+	int mapLimit = mapDimension_ - 1;
+
+	// Find a valid random spawn location for the unit
+	sf::Vector2i coordinates = sf::Vector2i(rand() % mapLimit, rand() % mapLimit);
+
+	// if the first is not valid - Keep attempting new locaitons until a valid one is found
+	while (!(PathMap_[coordinates.y * mapDimension_ + coordinates.x] && unitMap_[coordinates.y * mapDimension_ + coordinates.x] == nullptr))
+	{
+		coordinates = sf::Vector2i(rand() % mapLimit, rand() % mapLimit);
+	}
+
+	// return the random component
+	return coordinates;
+
+}
+
+
+
+void GameWorld::GenerateRandomWolrd()
+{
+
+	// Create a square map with Random Grass textures
+	for (int i = 0; i < (mapDimension_ * mapDimension_); i++)
+	{
+
+		// Get a random texture (2 possible 100 or 101)
+		int randomGrassTextureId = 100 + rand() % 2;
+		// Store this in the map location 
+		TileMap_[i].id = randomGrassTextureId;
+
+	}
+
+
+	// Add random trees and foliage on Per% of the map
+
+	// Calculate the number of foliage
+	int treeNumbers = mapDimension_ * mapDimension_ * 0.1f; // 10%
+
+	// Randomly assigne these to locations
+	for (int i = 0; i < treeNumbers; i++)
+	{
+
+		// Get a Random Tile ID
+		int randomTileId_x = rand() % mapDimension_;
+		int randomTileId_y = rand() % mapDimension_;
+
+		// Get a random Tree tile 85 to 92 on the sprite sheet
+		int randomTreeTile = 85 + rand() % 7;
+
+		// Store this in the map location 
+		TileMap_[randomTileId_y * mapDimension_ + randomTileId_x].id = randomTreeTile;
+		// Areas are not walkable
+		PathMap_[randomTileId_y * mapDimension_ + randomTileId_x] = false;
+
+	}
+
+	// Add a river down the middle with a crossing point
+
+	// Go through the map and add the river ect
+	for (int y = 0; y < (mapDimension_); y++)
+	{
+
+		for (int x = 0; x < (mapDimension_); x++)
+		{
+
+			// Check if you create Sand
+			if (x == mapDimension_ * 9 / 20 || x == mapDimension_ * 11 / 20)
+			{
+				if (y > mapDimension_ * 9 / 20 && y < mapDimension_ * 11 / 20)
+				{
+					// Place Bridge
+					TileMap_[y * mapDimension_ + x].id = 57;
+					// Areas are walkable
+					PathMap_[y * mapDimension_ + x] = true;
+				}
+				else
+				{
+					// Place Beach
+					TileMap_[y * mapDimension_ + x].id = 45;
+					// Areas are walkable
+					PathMap_[y * mapDimension_ + x] = true;
+				}
+			}
+
+			// Check if you create Water
+			if (x > mapDimension_ * 9 / 20 && x < mapDimension_ * 11 / 20)
+			{
+				if (y > mapDimension_ * 9 / 20 && y < mapDimension_ * 11 / 20)
+				{
+					// Place Bridge
+					TileMap_[y * mapDimension_ + x].id = 57;
+					// Areas are walkable
+					PathMap_[y * mapDimension_ + x] = true;
+				}
+				else
+				{
+					// Place Water
+					TileMap_[y * mapDimension_ + x].id = 71;
+					// Areas are not walkable
+					PathMap_[y * mapDimension_ + x] = false;
+				}
+
+			}
+
+			// Assign the actual screen position
+			TileMap_[y * mapDimension_ + x].screen_position = sf::Vector2f(x*TILESIZE, y*TILESIZE);
+
+		}
+
+	}
 
 }

@@ -6,28 +6,28 @@ Death::~Death()
 }
 
 
-void Death::Enter()
+void Death::Enter(GameWorld& world)
 {
 
-	unit_->SetSpriteId(102); // Checnge sprite
-	unit_->posDirty_ = true;
+	unit_.SetSpriteId(102); // Change Sprite
 
 }
 
 
-void Death::Step(float dt)
+void Death::Step(GameWorld& world, float dt)
 {
 
 	// update the timer
-	timer += dt;
+	timer_ += dt;
 
 	// Take action 
-	if (timer > 10.0f)
+	if (timer_ > 10.0f)
 	{
 
 		// Remove yourself from the board
-		unit_->world_.FreeUnitFromTile(unit_->GetCurrentTile());
-		// unit_->Active_ = false;
+		world.FreeUnitFromTile(unit_.GetCurrentTile());
+		unit_.setActive(false);
+		unit_.setDeleted(true);
 
 		// Add a memory cleanup function
 		return;
@@ -37,6 +37,9 @@ void Death::Step(float dt)
 }
 
 
-void Death::Exit()
+void Death::Exit(GameWorld& world)
 {
+
+	// Never Reached
+
 }

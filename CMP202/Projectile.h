@@ -4,7 +4,6 @@
 #include <mutex>
 #include "SFML\System\Vector2.hpp"
 #include "RenderManager.h"
-#include "UnitWorld.h"
 #include "Unit.h"
 #include <atomic>
 // SFML

@@ -2,7 +2,7 @@
 
 
 
-SpriteRenderer::SpriteRenderer(std::string filename = "")
+SpriteRenderer::SpriteRenderer(std::string filename)
 {
 
 	// Load the Sprite sheet and symbols for generating the games graphics

@@ -8,8 +8,8 @@ Unit::Unit(sf::Vector2i position, TEAM team) : team_(team)
 	currentTile = position;
 
 	// Setup the rendering information (i.e. appearance and actual screen position)
-	spriteInfo.screen_position = sf::Vector2f(position.x * TILESIZE, position.y * TILESIZE);
-	spriteInfo.id = (int)team_;
+	sprite_.screen_position = sf::Vector2f(position.x * TILESIZE, position.y * TILESIZE);
+	sprite_.id = (int)team_;
 
 }
 
@@ -22,12 +22,12 @@ Unit::~Unit()
 }
 
 
-SpriteObject& Unit::Update(float dt)
+SpriteObject& Unit::Update(GameWorld& world, float dt)
 {
 
 	// If there is a current state - Update it
 	if (currentState_)
-		currentState_->Step(dt);
+		currentState_->Step(world, dt);
 
 	// Return the object to render
 	return sprite_;
@@ -35,16 +35,13 @@ SpriteObject& Unit::Update(float dt)
 }
 
 
-void Unit::ChangeState(AiState * newState)
+void Unit::ChangeState(GameWorld& world, AiState* newState)
 {
-
-	// Lock access to modifying the state
-	// std::unique_lock<std::mutex> lock(state);
 
 	// Exit the old
 	if (currentState_)
 	{
-		currentState_->Exit();
+		currentState_->Exit(world);
 		delete currentState_;
 	}
 
@@ -52,7 +49,7 @@ void Unit::ChangeState(AiState * newState)
 	currentState_ = newState;
 
 	// Enter the new
-	currentState_->Enter();
+	currentState_->Enter(world);
 
 }
 
@@ -73,37 +70,13 @@ void Unit::SetPath(std::list<sf::Vector2i> path)
 	if (!path.empty())
 	{
 
-		// Lock the path to be updated
-		std::unique_lock<std::mutex> state(pathState_lock);
-
 		tileDestination = path.front();
-		tileFinalDestination = path.back();
 		pointDestination = sf::Vector2f(tileDestination.x * TILESIZE, tileDestination.y * TILESIZE);
 
 	}
 
 	// flag that the path has been calculated
-	waitngPath = false;
-
-}
-
-
-void Unit::ResetPath()
-{
-
-	// Lock the path to be updated
-	std::unique_lock<std::mutex> Set(path_lock);
-
-	// Reset the path 
-	path_.clear();
-
-	// Lock the path to be updated
-	std::unique_lock<std::mutex> state(pathState_lock);
-
-	// Reset the path data
-	tileDestination = sf::Vector2i(0, 0);
-	tileFinalDestination = sf::Vector2i(0, 0);
-	pointDestination = sf::Vector2f(0.0f, 0.0f);
+	waitingPathRequestFlag = false;
 
 }
 
@@ -112,34 +85,10 @@ sf::Vector2i Unit::GetTileDestination()
 {
 
 	// Lock the path to be updated
-	std::unique_lock<std::mutex> state(pathState_lock);
+	std::unique_lock<std::mutex> state(path_lock);
 
-	// check if a path exists
-	if (path_.empty())
-	{
-		return currentTile;
-	}
-	
 	// Get the next path desitnation 
 	return tileDestination;
-
-}
-
-
-sf::Vector2i Unit::GetTileFinalDestination()
-{
-
-	// Lock the path to be updated
-	std::unique_lock<std::mutex> state(pathState_lock);
-
-	// check if a path exists
-	if (path_.empty())
-	{
-		return currentTile;
-	}
-
-	// Get the next path desitnation 
-	return tileFinalDestination;
 
 }
 
@@ -148,13 +97,7 @@ sf::Vector2f Unit::GetPointDestination()
 {
 
 	// Lock the path to be updated
-	std::unique_lock<std::mutex> state(pathState_lock);
-
-	// check if a path exists
-	if (path_.empty())
-	{
-		return spriteInfo.screen_position;
-	}
+	std::unique_lock<std::mutex> state(path_lock);
 
 	// Get the next path desitnation 
 	return pointDestination;
@@ -165,18 +108,15 @@ sf::Vector2f Unit::GetPointDestination()
 sf::Vector2i Unit::GetCurrentTile()
 {
 
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(current_lock);
 	return currentTile;
 
 }
 
+
 sf::Vector2f Unit::GetCurrentPoint()
 {
 
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	return spriteInfo.screen_position;
+	return sprite_.screen_position;
 
 }
 
@@ -184,30 +124,24 @@ sf::Vector2f Unit::GetCurrentPoint()
 void Unit::SetCurrentTile(sf::Vector2i tile)
 {
 
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(current_lock);
 	currentTile = tile;
 
 }
 
 
-void Unit::SetSpriteInfo(RenderObject newspriteinfo)
+Unit::TEAM Unit::GetTeam() const
 {
 
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	spriteInfo = newspriteinfo;
+	// Get the next path desitnation 
+	return team_;
 
 }
-
 
 void Unit::SetScreenPosition(sf::Vector2f position)
 {
 
 	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	spriteInfo.screen_position = position;
-	posDirty_ = true;
+	sprite_.screen_position = position;
 
 }
 
@@ -216,86 +150,8 @@ void Unit::SetSpriteId(int id)
 {
 
 	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	spriteInfo.id = id;
-	posDirty_ = true;
+	sprite_.id = id;
 
-}
-
-
-RenderObject Unit::GetSpriteInfo()
-{
-
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	return spriteInfo;
-
-}
-
-
-int Unit::GetEntityId()
-{
-
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	return entityId;
-
-}
-
-
-void Unit::SetEntityId(int entitIdNumber)
-{
-
-	// Lock the access to be updated
-	std::unique_lock<std::mutex> Set(render_lock);
-	entityId = entitIdNumber;
-
-}
-
-
-void Unit::Damage(int Amount)
-{
-
-	// Lock the access to be updated
-	health += Amount;
-
-}
-
-
-sf::Vector2i Unit::GetCurrentTargetTile()
-{
-	
-	// Lock
-	std::unique_lock<std::mutex> state(enemy);
-	return currentTargetTile;
-	
-}
-
-
-void Unit::SetCurrentTarget(Unit * Target)
-{
-
-	// Lock
-	std::unique_lock<std::mutex> state(enemy);
-
-	if (Target)
-	{
-		currentTarget = Target;
-		currentTargetTile = Target->GetCurrentTile();
-	}
-	else
-	{
-		currentTarget = nullptr;
-		currentTargetTile = sf::Vector2i(0, 0);
-	}
-
-}
-
-
-Unit * Unit::GetCurrentTarget()
-{
-	std::unique_lock<std::mutex> state(enemy);
-	return currentTarget;
 }
 
 
@@ -308,38 +164,21 @@ void Unit::UpdateDestination()
 	// check if a path exists
 	if (path_.empty())
 	{
-
-		// Lock the path to be updated
-		std::unique_lock<std::mutex> state(pathState_lock);
-
-		// Reset the path data
-		tileDestination = sf::Vector2i(0, 0);
-		tileFinalDestination = sf::Vector2i(0, 0);
-		pointDestination = sf::Vector2f(0.0f, 0.0f);
+		// The path is empty
 		return;
-
 	}
 
 	// Get the next path desitnation 
 	path_.pop_front();
 
 	// Apply the new information
-	if (!path_.empty())
-	{
-
-		// Lock the path to be updated
-		std::unique_lock<std::mutex> state(pathState_lock);
-
-		tileDestination = path_.front();
-		tileFinalDestination = path_.back();
-		pointDestination = sf::Vector2f(tileDestination.x * TILESIZE, tileDestination.y * TILESIZE);
-
-	}
+	tileDestination = path_.front();
+	pointDestination = sf::Vector2f(tileDestination.x * TILESIZE, tileDestination.y * TILESIZE);
 
 }
 
 
-bool Unit::PathEmpty()
+bool Unit::isPathEmpty()
 {
 
 	// Lock the path to be updated

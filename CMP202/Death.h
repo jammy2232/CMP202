@@ -8,16 +8,16 @@ class Death : public AiState
 
 public:
 
-	Death(Unit* unit) { unit_ = unit; }
+	Death(Unit& unit) : AiState(unit) {}
 	~Death();
 
-	void Enter();
-	void Step(float dt);
-	void Exit();
+	void Enter(GameWorld& world);
+	void Step(GameWorld& world, float dt);
+	void Exit(GameWorld& world);
 
 private:
 
-	float timer = 0.0f; 
+	float timer_ = 0.0f; 
 
 };
 

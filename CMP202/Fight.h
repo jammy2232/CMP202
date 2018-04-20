@@ -5,22 +5,24 @@
 #include "Unit.h"
 #include "Projectile.h"
 
+#include "Death.h"
+#include "SearchAndDestoy.h"
 
 class Fight : public AiState
 {
 
 public:
 
-	Fight(Unit* unit) { unit_ = unit; }
+	Fight(Unit& unit) : AiState(unit) {}
 	~Fight();
 
-	void Enter();
-	void Step(float dt);
-	void Exit();
+	void Enter(GameWorld& world);
+	void Step(GameWorld& world, float dt);
+	void Exit(GameWorld& world);
 
 private:
 
-	float attackTimer = 0.0f;
+	float attackTimer_ = 0.0f;
 
 };
 

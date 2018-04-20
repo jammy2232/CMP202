@@ -1,25 +1,25 @@
 #pragma once
 
+// Game Settings 
+#include "GameSettings.h"
+
 // base class 
 #include "Scene.h"
 
-// std
+// std library functions
 #include <vector>
 #include <thread>
 
-// Battle Gameplay
-#include "Unit.h"
-#include "GameSettings.h"
+// Systems
 #include "PathFinder.h"
+#include "SpriteRenderer.h"
+#include "GameWorld.h"
+#include "GameObjectManager.h"
 
-// Generation and management systems
-#include "RenderManager.h"
-#include "MapGenerator.h"
-#include "UnitWorld.h"
+// Units
+#include "Unit.h"
+#include "SearchAndDestoy.h"
 
-// Forward delcarations
-class PathFinder;
-class Unit;
 
 class BattleScene :	public Scene
 {
@@ -41,31 +41,33 @@ public:
 private:
 
 	// Map size information 
-	const int mapDimension = 60;
 	const int maxUnits = 300;
-
-	// Renderer Managers
-	RenderManager* tileMapRenderer = nullptr;
-	RenderManager* unitRenderer = nullptr;
-	RenderManager* arrowRenderer = nullptr;
-
-	// Pathfiding system
-	PathFinder* pathfinder = nullptr;
-	PathFinder* pathfinder1 = nullptr;
-
-	// Unit update threads
-	std::thread* unitupdate0 = nullptr;
-	std::thread* unitupdate1 = nullptr;
 
 	// Loading and preperation functions
 	void SetUpViewWindows();
 
-	// Create a vector to store all the unit locations
-	UnitWorld* unitsWorld_ = nullptr;
-	std::vector<Unit*> units_;
-
-	// Thread safety
+	// Thread safety for rendering
 	std::mutex windowEditor_;
+	
+	// Pathfiding system
+	PathFinder* pathfinder = nullptr;
+
+
+	// Unit update threads
+	// std::thread* unitupdate0 = nullptr;
+	// std::thread* unitupdate1 = nullptr;
+
+	// Game World
+	GameWorld* world_;
+
+	// The  Sprite Renderer
+	SpriteRenderer* spriteRenderer_;
+
+	// Game Object Manager
+	GameObjectManager* units_;
+	GameObjectManager* projectiles_;
+
+
 
 };
 

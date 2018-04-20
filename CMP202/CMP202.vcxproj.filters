@@ -60,12 +60,6 @@
     <ClCompile Include="SearchAndDestoy.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="GameManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenerator.cpp">
-      <Filter>Source Files\Helper</Filter>
-    </ClCompile>
     <ClCompile Include="Unit.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
@@ -78,9 +72,6 @@
     <ClCompile Include="Death.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
-    <ClCompile Include="Projectile.cpp">
-      <Filter>Source Files\AIUnits</Filter>
-    </ClCompile>
     <ClCompile Include="SpriteRenderer.cpp">
       <Filter>Source Files\Helper</Filter>
     </ClCompile>
@@ -91,7 +82,10 @@
       <Filter>Source Files\Helper</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files\Helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,15 +113,6 @@
     <ClInclude Include="SearchAndDestoy.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapGenerator.h">
-      <Filter>Header Files\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Charge.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
@@ -135,9 +120,6 @@
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
     <ClInclude Include="Death.h">
-      <Filter>Header Files\AIUnits</Filter>
-    </ClInclude>
-    <ClInclude Include="Projectile.h">
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
     <ClInclude Include="SpriteRenderer.h">
@@ -150,7 +132,13 @@
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files\Helper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

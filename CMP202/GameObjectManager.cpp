@@ -48,7 +48,7 @@ void GameObjectManager::PreProcessing()
 			freeSlots_.push(indexTracker);
 
 			// Update the delete flag
-			object.setDeleted();
+			object.setDeleted(false);
 
 		}
 		
@@ -81,7 +81,7 @@ void GameObjectManager::Update(float delta_time, SpriteRenderer& renderer)
 
 
 // attempt to find a free location for the unit spawn and spawn it
-bool GameObjectManager::SpawnObject(GameObject newUnit)
+GameObject* GameObjectManager::SpawnObject(GameObject newUnit)
 {
 	
 	// lock access to the unit list to spawn the new unit
@@ -89,7 +89,7 @@ bool GameObjectManager::SpawnObject(GameObject newUnit)
 
 	// if there is no free slots return false
 	if (freeSlots_.empty())
-		return false;
+		return nullptr;
 
 	// add the new unit to the free slot
 	int index = freeSlots_.front();
@@ -99,6 +99,9 @@ bool GameObjectManager::SpawnObject(GameObject newUnit)
 
 	// Add the unit to the container 
 	objects_[index] = newUnit;
+
+	// return a pointer to the object
+	return &objects_[index];
 
 }
 

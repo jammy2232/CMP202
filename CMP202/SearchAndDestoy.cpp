@@ -6,35 +6,29 @@ SearchAndDestoy::~SearchAndDestoy()
 }
 
 
-void SearchAndDestoy::Enter()
+void SearchAndDestoy::Enter(GameWorld& world)
 {
-
-	// Reset any path the unit already has
-	unit_->ResetPath();
 
 	// Assuming that there is a delay for a path pick a randomly location and request a path.
 
-	// There is no enemy
-	unit_->SetCurrentTarget(nullptr);
-
 	// Pick a random spot within 5 tiles of the units current location
-	sf::Vector2i randomLocation = MoveToRandomLocation(5);
+	sf::Vector2i randomLocation = MoveToRandomLocation(world, 5);
 
 	// Request a path
-	PathFinder::RequestPath(unit_, unit_->GetCurrentTile(), randomLocation);
+	PathFinder::RequestPath(&unit_, unit_.GetCurrentTile(), randomLocation);
 
 }
 
 
-void SearchAndDestoy::Step(float dt)
+void SearchAndDestoy::Step(GameWorld& world, float dt)
 {
 
 	// Check if the unit is dead 
-	if (unit_->GetHealth() < 0)
+	if (unit_.GetHealth() < 0)
 	{
 
 		// The unit is dead
-		unit_->ChangeState(new Death(unit_));
+		unit_.ChangeState(world, new Death(unit_));
 
 		// No more actions required
 		return;
@@ -42,17 +36,17 @@ void SearchAndDestoy::Step(float dt)
 	}
 
 	// Check if the random path has been recieved
-	if (unit_->waitngPath)
+	if (unit_.waitingPathRequestFlag)
 	{
 
 		// if not do Nothing
 		return;
 
 	}
-	else if (unit_->PathEmpty())
+	else if (unit_.isPathEmpty())
 	{
 		// If you have a path but it's empty - reset this state
-		unit_->ChangeState(new SearchAndDestoy(unit_));
+		unit_.ChangeState(world, new SearchAndDestoy(unit_));
 		return;
 
 	}
@@ -60,19 +54,19 @@ void SearchAndDestoy::Step(float dt)
 	{
 
 		// Move the unit a block
-		if (MoveTheUnit(dt))
+		if (MoveTheUnit(world, dt))
 		{
 
 			// Check for enemies
-			Unit* enemy = CheckForEnemies(5);
+			sf::Vector2i enemyLocation = CheckForEnemies(world,5);
 
 			// if there is any enemies respond accordingly
-			if (enemy)
+			if (enemyLocation.x != -1)
 			{
 
 				//Charge
-				unit_->SetCurrentTarget(enemy);
-				unit_->ChangeState(new Charge(unit_));
+				unit_.SetTargetLocation(enemyLocation);
+				unit_.ChangeState(world, new Charge(unit_));
 				return;
 
 			}
@@ -83,14 +77,15 @@ void SearchAndDestoy::Step(float dt)
 		{
 
 			// Check for enemies
-			Unit* enemy = CheckForEnemies(5);
+			sf::Vector2i enemyLocation = CheckForEnemies(world, 5);
 
 			// if there is any enemies respond accordingly
-			if (enemy)
+			if (enemyLocation.x != -1)
 			{
-				// Charge
-				unit_->SetCurrentTarget(enemy);
-				unit_->ChangeState(new Charge(unit_));
+
+				//Charge
+				unit_.SetTargetLocation(enemyLocation);
+				unit_.ChangeState(world, new Charge(unit_));
 				return;
 
 			}
@@ -98,7 +93,7 @@ void SearchAndDestoy::Step(float dt)
 			{
 
 				// If you have a path but it's empty - reset this state
-				unit_->ChangeState(new SearchAndDestoy(unit_));
+				unit_.ChangeState(world, new SearchAndDestoy(unit_));
 
 			}
 
@@ -109,18 +104,21 @@ void SearchAndDestoy::Step(float dt)
 }
 
 
-void SearchAndDestoy::Exit()
+void SearchAndDestoy::Exit(GameWorld& world)
 {
+
+	// Do nothing
+
 }
 
 
-Unit* SearchAndDestoy::CheckForEnemies(int range)
+sf::Vector2i SearchAndDestoy::CheckForEnemies(GameWorld& world, int range)
 {
 
 	// Get the units current tile
-	sf::Vector2i currentTile = unit_->GetCurrentTile();
-	int mapDimension = unit_->world_.GetMapDimension();
-	Unit* enemy = nullptr;
+	sf::Vector2i currentTile = unit_.GetCurrentTile();
+	sf::Vector2i enemyLocation(-1, -1);
+	int mapDimension = world.GetMapDimension();
 	int distanceSQR = range*range + range*range;
 
 	// Search the grid local to this unit to find any enemies 
@@ -138,14 +136,14 @@ Unit* SearchAndDestoy::CheckForEnemies(int range)
 			{
 
 				// Get the pointer to the unit on the tile
-				Unit* UnitOnTile = unit_->world_.GetUnitInfo(sf::Vector2i(x, y));
+				const Unit* UnitOnTile = world.GetUnitInfo(sf::Vector2i(x, y));
 
 				// Check of there is a valid unit there
 				if (UnitOnTile != nullptr)
 				{
 
 					// Check the team of that unit
-					if (UnitOnTile->GetSpriteInfo().id != unit_->GetSpriteInfo().id)
+					if (UnitOnTile->GetTeam() != unit_.GetTeam())
 					{
 
 						int enemDist = (x - currentTile.x)*(x - currentTile.x) + (y - currentTile.y)*(y - currentTile.y);
@@ -154,7 +152,7 @@ Unit* SearchAndDestoy::CheckForEnemies(int range)
 						if (enemDist < distanceSQR)
 						{
 							distanceSQR = enemDist;
-							enemy = UnitOnTile;
+							enemyLocation = sf::Vector2i(x,y);
 						}
 
 					}
@@ -167,13 +165,13 @@ Unit* SearchAndDestoy::CheckForEnemies(int range)
 
 	}
 
-	// There are no enemies in the site radius
-	return enemy;
+	// return the closest enemy
+	return enemyLocation;
 
 }
 
 
-sf::Vector2i SearchAndDestoy::MoveToRandomLocation(int distance)
+sf::Vector2i SearchAndDestoy::MoveToRandomLocation(GameWorld& world, int distance)
 {
 
 	// Get a random number to move in the x and y directions
@@ -181,7 +179,7 @@ sf::Vector2i SearchAndDestoy::MoveToRandomLocation(int distance)
 	int randY = -distance + rand() % (2 * distance + 1);
 
 	// Validate this position on the map relative to the units current position
-	sf::Vector2i current = unit_->GetCurrentTile();
+	sf::Vector2i current = unit_.GetCurrentTile();
 
 	// Calculate the new positons relative to the units positions
 	randX = current.x + randX;
@@ -194,8 +192,8 @@ sf::Vector2i SearchAndDestoy::MoveToRandomLocation(int distance)
 		else if (coord >= mapDimension) { coord = mapDimension - 1; }
 	};
 	
-	validate(randX, unit_->world_.GetMapDimension());
-	validate(randY, unit_->world_.GetMapDimension());
+	validate(randX, world.GetMapDimension());
+	validate(randY, world.GetMapDimension());
 	
 	// Return the target
 	return sf::Vector2i(randX, randY);

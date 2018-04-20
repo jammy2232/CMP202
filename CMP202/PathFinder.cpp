@@ -78,7 +78,7 @@ void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destin
 {
 
 	// Check there isn't already a path requested
-	if (unit->waitngPath)
+	if (unit->waitingPathRequestFlag)
 	{
 		return;
 	}
@@ -99,7 +99,7 @@ void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destin
 	taskQueue_.push(request);
 
 	// Update the unit 
-	unit->waitngPath = true;
+	unit->waitingPathRequestFlag = true;
 
 }
 
@@ -318,7 +318,7 @@ void PathFinder::Work()
 		task.unit->SetPath(findPath(task.start, task.destination));
 
 		// Flag the path complete
-		task.unit->waitngPath = false;
+		task.unit->waitingPathRequestFlag = false;
 
 	}
 

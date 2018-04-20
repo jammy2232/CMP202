@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SFML\System\Vector2.hpp"
+#include "GameWorld.h"
 
 class Unit;
 
@@ -8,27 +9,29 @@ class AiState
 {
 public:
 	
-	AiState(Unit* unit  = nullptr) : unit_(unit) {}
+	AiState(Unit& unit) : unit_(unit) {}
 	~AiState();
 
-	virtual void Enter() {}
-	virtual void Step(float dt) {}
-	virtual void Exit() {}
+	virtual void Enter(GameWorld& world) {}
+	virtual void Step(GameWorld& world, float dt) {}
+	virtual void Exit(GameWorld& world) {}
+
+	// defining the equals operator
 
 protected:
 
 	// References to unit needed for managing the state
-	Unit* unit_;
+	Unit& unit_;
 
 	// functions fundamental and data to all states
-	bool MoveTheUnit(float dt);
+	bool MoveTheUnit(GameWorld& world, float dt);
 	bool MoveBlocked() { return blocked; }
 
 private:
 
 	// Functions for processing the movements
 	void calculateMovementVector();
-	bool MovePossible();
+	bool MovePossible(GameWorld& world);
 	bool incrementMovement(float dt);
 	bool wait(float dt);
 

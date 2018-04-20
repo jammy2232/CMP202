@@ -1,12 +1,13 @@
 #pragma once
 
+// work around for not getting tilemap size from xml
+#include "GameSettings.h" 
+
+// Sprite renderer
+#include "SpriteRenderer.h"
+
 // Core std systems
 #include <vector>
-#include <assert.h>
-
-// Game Systems
-#include "RenderManager.h"
-#include "GameSettings.h" // work around for not getting tilemap size from xml
 
 class MapGenerator
 {
@@ -19,9 +20,6 @@ public:
 
 	// This allows the pathfinder to be setup
 	std::vector<bool> GetStaticMapData() { assert(!staticMapData_.empty()); return staticMapData_; }
-
-	// This parses the map information to the render manager
-	RenderManager* CreateRenderSystem(std::string filename);
 
 private:
 

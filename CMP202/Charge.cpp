@@ -6,27 +6,24 @@ Charge::~Charge()
 }
 
 
-void Charge::Enter()
+void Charge::Enter(GameWorld& world)
 {
 
-	// Clear any current path
-	unit_->ResetPath();
-
 	// Request a path to the enemylocaton
-	PathFinder::RequestPath(unit_, unit_->GetCurrentTile(), unit_->GetCurrentTargetTile());
+	PathFinder::RequestPath(&unit_, unit_.GetCurrentTile(), unit_.GetTargetLocation());
 
 }
 
 
-void Charge::Step(float dt)
+void Charge::Step(GameWorld& world, float dt)
 {
 
 	// Check if the unit is dead 
-	if (unit_->GetHealth() < 0)
+	if (unit_.GetHealth() < 0)
 	{
 
 		// The unit is dead
-		unit_->ChangeState(new Death(unit_));
+		unit_.ChangeState(world, new Death(unit_));
 
 		// No more actions required
 		return;
@@ -34,17 +31,17 @@ void Charge::Step(float dt)
 	}
 
 	// Check if the random path has been recieved
-	if (unit_->waitngPath)
+	if (unit_.waitingPathRequestFlag)
 	{
 
 		// if not do Nothing
 		return;
 
 	}
-	else if (unit_->PathEmpty())
+	else if (unit_.isPathEmpty())
 	{
 		// If you have a path but it's empty You reach where the enemy was and there not there - reset this to search
-		unit_->ChangeState(new SearchAndDestoy(unit_));
+		unit_.ChangeState(world, new SearchAndDestoy(unit_));
 		return;
 
 	}
@@ -55,14 +52,11 @@ void Charge::Step(float dt)
 		{
 
 			// Check if it's the enemy in the adjacent tile
-			if (unit_->world_.GetUnitInfo(unit_->GetTileDestination()) == unit_->GetCurrentTarget())
+			if (world.GetUnitInfo(unit_.GetTileDestination())->GetTeam() != unit_.GetTeam())
 			{
 
-				// Update the reference to your enemy
-				unit_->SetCurrentTarget(unit_->world_.GetUnitInfo(unit_->GetTileDestination()));
-
 				// Transision to fighting
-				unit_->ChangeState(new Fight(unit_));
+				unit_.ChangeState(world, new Fight(unit_));
 
 				// no more action required
 				return;
@@ -72,11 +66,11 @@ void Charge::Step(float dt)
 		}
 
 		// Move the unit a block
-		if (MoveTheUnit(dt))
+		if (MoveTheUnit(world, dt))
 		{
 
 			// Validate the enemy is still on the path
-			if (CheckPathIsValid())
+			if (CheckPathIsValid(world))
 			{
 				// Keep moving along it
 				return;
@@ -84,7 +78,7 @@ void Charge::Step(float dt)
 			else
 			{
 				// target lost and Go back to hunting
-				unit_->ChangeState(new SearchAndDestoy(unit_));
+				unit_.ChangeState(world, new SearchAndDestoy(unit_));
 				return;
 			}
 
@@ -95,7 +89,7 @@ void Charge::Step(float dt)
 }
 
 
-void Charge::Exit()
+void Charge::Exit(GameWorld& world)
 {
 
 
@@ -103,28 +97,20 @@ void Charge::Exit()
 }
 
 
-bool Charge::CheckPathIsValid()
+bool Charge::CheckPathIsValid(GameWorld& world)
 {
 
 	// Get a copy of the path
-	std::list<sf::Vector2i> path = unit_->CopyPath();
-	bool pathGoodFlag = false;
+	std::list<sf::Vector2i> path = unit_.CopyPath();
 
 	// Check that the unit is till on the path
 	for (auto step : path)
 	{
-		if (unit_->world_.GetUnitInfo(step) == unit_->GetCurrentTarget())
+		if (world.GetUnitInfo(step)->GetTeam() == unit_.GetTeam())
 		{
-
-			// Update the reference to your enemy
-			unit_->SetCurrentTarget(unit_->world_.GetUnitInfo(step));
-			//flag the path is good
-			pathGoodFlag = true;
-
+			return true;
 		}
 	}
-
-	return pathGoodFlag;
-
+	return false;
 }
 

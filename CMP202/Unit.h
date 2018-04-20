@@ -3,19 +3,20 @@
 // Global Variables - These are constant for the development environment
 #include "GameSettings.h"
 
-// std funciton/data includes
+// std includes
 #include <list>
-#include <mutex>
 #include <vector>
+
+// Thread protection for pathfiding information
+#include <mutex>
 #include <atomic>
-#include <memory>
 
 // Game Systems
 #include "GameObject.h"
 #include "SpriteRenderer.h"
+#include "GameWorld.h"
 #include "PathFinder.h"
 #include "AiState.h"
-#include "GameWorld.h"
 
 
 class Unit : public GameObject
@@ -29,42 +30,45 @@ public:
 	Unit(sf::Vector2i position = sf::Vector2i(0,0), TEAM team = NONE);
 	~Unit();
 
-	// Handling state update and transition
-	SpriteObject& Update(float delta_time);
-
+	// Handling state update and transition returning the render request
+	SpriteObject& Update(GameWorld& world, float delta_time);
 
 	// Handling update of the states
-	void ChangeState(AiState* newState);
+	void ChangeState(GameWorld& world, AiState* newState);
 
 	// Navigation controls for path access (all thread safe)
 	void SetPath(std::list<sf::Vector2i> path);
-	std::list<sf::Vector2i> CopyPath();
-	void ResetPath();
+
+	// This is a thread safe flag to track path finding requests
+	std::atomic<bool> waitingPathRequestFlag = false;
+
+	// Basic actions for accessing and modifying the path data 
 	void UpdateDestination();
-	bool PathEmpty();
+	bool isPathEmpty();
+	std::list<sf::Vector2i> CopyPath();
 
 	// Access to path information (all thread safe)
 	sf::Vector2i GetTileDestination();
-	sf::Vector2i GetTileFinalDestination();
 	sf::Vector2f GetPointDestination();
+
+	// Get access to the units current information
 	sf::Vector2i GetCurrentTile();
 	sf::Vector2f GetCurrentPoint();
 	void SetCurrentTile(sf::Vector2i tile);
 
-	// This is a thread safe flag to track path finding requests
-	std::atomic<bool> waitingPathRequestFlag;
-
-	// Impact Unit
-	void Damage(int Amount);
+	// Damaging a unit (Thread Safe access) accessed through the game map
+	void Damage(int Amount) { health -= Amount; }
 	int GetHealth() { return health; }
+	TEAM GetTeam() const;
 
-	// Enemy Management
-	sf::Vector2i GetCurrentTargetTile();
-	void SetCurrentTarget(Unit* Target);
-	Unit* GetCurrentTarget();
+	// Update the sprite info
+	void SetScreenPosition(sf::Vector2f position);
+	void SetSpriteId(int id);
 
-	// Access to the world to see (This is already thread safe)
-	UnitWorld& world_;
+	// Enquire about the units last sighting
+	void SetTargetLocation(sf::Vector2i location) {	enemyLocation_ = location;	}
+	sf::Vector2i GetTargetLocation() { return enemyLocation_; }
+	
 
 private:
 
@@ -73,21 +77,19 @@ private:
 	std::list<sf::Vector2i> path_;
 
 	// path information and Position Information
-	std::mutex current_lock;
-	sf::Vector2i currentTile;
-	std::mutex pathState_lock;
 	sf::Vector2i tileDestination;
-	sf::Vector2i tileFinalDestination;
 	sf::Vector2f pointDestination;
 
+	// last spotted enemy location
+	sf::Vector2i enemyLocation_;
+
 	// Current state controlling this units data
-	std::mutex state;
 	AiState* currentState_;
 
 	// Unit Data and stats
 	TEAM team_;
+	sf::Vector2i currentTile;
 	std::atomic<int> health = 100;
-
 
 	// Unit Rendering informaiton 
 	SpriteObject sprite_;

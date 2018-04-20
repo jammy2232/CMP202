@@ -116,7 +116,7 @@ void Projectile::UpdateArrow(float dt)
 	{
 
 		// the unit is pasted the intended position so therefore set the position
-		Unit* tileInfo = world_->GetUnitInfo(destinationTile);
+	//	Unit* tileInfo = world_GetUnitInfo(destinationTile);
 
 		if (tileInfo)
 		{

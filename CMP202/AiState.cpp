@@ -1,14 +1,12 @@
 #include "AiState.h"
 #include "Unit.h"
 
-#include <assert.h>
-
 AiState::~AiState()
 {
 }
 
 
-bool AiState::MoveTheUnit(float dt)
+bool AiState::MoveTheUnit(GameWorld& world, float dt)
 {
 	
 	// Switch for each step of the motion
@@ -17,7 +15,7 @@ bool AiState::MoveTheUnit(float dt)
 
 	case CHECK:
 
-		if (MovePossible())
+		if (MovePossible(world))
 		{
 			// Can actually move
 			blocked = false;
@@ -92,32 +90,27 @@ void AiState::calculateMovementVector()
 {
 
 	// calculate forward direction 
-	sf::Vector2f direction = unit_->GetPointDestination() - unit_->GetCurrentPoint();
+	sf::Vector2f direction = unit_.GetPointDestination() - unit_.GetCurrentPoint();
 	// Normailise the vector vector/length
 	forwardDirection = direction / (std::sqrtf(std::powf(direction.x, 2.0f) + std::powf(direction.y, 2.0f)));
-
-	// Check that the unit never moves more than one space (or at least is calculated to)
-	// assert(direction.x <= TILESIZE &&  direction.x >= -TILESIZE && direction.y <= TILESIZE && direction.y >= -TILESIZE);
 
 }
 
 
-bool AiState::MovePossible()
+bool AiState::MovePossible(GameWorld& world)
 {
 
-	if (unit_->world_.CheckForUnit(sf::Vector2i(unit_->GetTileDestination())))
+	if (world.CheckForUnit(sf::Vector2i(unit_.GetTileDestination())))
 	{
-
 		// If there is a unit in the destination of this unit the movement isn't possible 
 		return false;
-
 	}
 
 	// if it's possible update the world with this units intention to move
 	// Set the new tile to taken
-	unit_->world_.SetUnitOnTile(unit_, unit_->GetTileDestination());
+	world.SetUnitOnTile(&unit_, unit_.GetTileDestination());
 	// release the old tile
-	unit_->world_.FreeUnitFromTile(unit_->GetCurrentTile());
+	world.FreeUnitFromTile(unit_.GetCurrentTile());
 
 	// flag success
 	return true;
@@ -129,21 +122,21 @@ bool AiState::incrementMovement(float dt)
 {
 
 	// Move the unit in the direction of travel
-	unit_->SetScreenPosition(unit_->GetCurrentPoint() + forwardDirection * UNITSPEED * dt);
+	unit_.SetScreenPosition(unit_.GetCurrentPoint() + forwardDirection * UNITSPEED * dt);
 
 	// Check if the unit has reached the destination 
 
 	// whats the current vector direction
-	sf::Vector2f currentDirection = unit_->GetPointDestination() - unit_->GetCurrentPoint();
+	sf::Vector2f currentDirection = unit_.GetPointDestination() - unit_.GetCurrentPoint();
 
 	// Check if thedot product to see the unit is passed the point 
 	if ((forwardDirection.x * currentDirection.x + forwardDirection.y * currentDirection.y) < 0.0f)
 	{
 
 		// the unit is pasted the intended position so therefore set the position
-		unit_->SetScreenPosition(unit_->GetPointDestination());
-		unit_->SetCurrentTile(unit_->GetTileDestination());
-		unit_->UpdateDestination();
+		unit_.SetScreenPosition(unit_.GetPointDestination());
+		unit_.SetCurrentTile(unit_.GetTileDestination());
+		unit_.UpdateDestination();
 		return true;
 
 	}

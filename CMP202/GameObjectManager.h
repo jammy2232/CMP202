@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 
+
 class GameObjectManager
 {
 
@@ -27,7 +28,7 @@ public:
 	void Update(float delta_time, SpriteRenderer& renderer);
 
 	// Spawn a new Unit
-	bool SpawnObject(GameObject newObject);
+	GameObject* SpawnObject(GameObject newObject);
 
 private:
 

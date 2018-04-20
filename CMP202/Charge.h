@@ -12,17 +12,17 @@ class Charge : public AiState
 
 public:
 
-	Charge(Unit* unit) { unit_ = unit; }
+	Charge(Unit& unit) : AiState(unit) {}
 	~Charge();
 
-	void Enter();
-	void Step(float dt);
-	void Exit();
+	void Enter(GameWorld& world);
+	void Step(GameWorld& world, float dt);
+	void Exit(GameWorld& world);
 
 private:
 
 	// intenal function 
-	bool CheckPathIsValid();
+	bool CheckPathIsValid(GameWorld& world);
 
 };
 

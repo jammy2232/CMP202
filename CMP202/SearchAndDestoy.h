@@ -7,6 +7,7 @@
 #include "SFML\System\Vector2.hpp"
 
 // States and transitions
+#include "GameWorld.h"
 #include "AiState.h"
 #include "Charge.h"
 
@@ -18,18 +19,18 @@ class SearchAndDestoy : public AiState
 
 public:
 
-	SearchAndDestoy(Unit* unit) { unit_ = unit; }
+	SearchAndDestoy(Unit& unit) : AiState(unit) {}
 	~SearchAndDestoy();
 
-	void Enter();
-	void Step(float dt);
-	void Exit();
+	void Enter(GameWorld& world);
+	void Step(GameWorld& world, float dt);
+	void Exit(GameWorld& world);
 
 private:
 
 	// Internal state functions
-	Unit* CheckForEnemies(int range);
-	sf::Vector2i MoveToRandomLocation(int distance);	
+	sf::Vector2i CheckForEnemies(GameWorld& world, int range);
+	sf::Vector2i MoveToRandomLocation(GameWorld& world, int distance);
 
 };
 

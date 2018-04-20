@@ -11,30 +11,55 @@ BattleScene::~BattleScene()
 bool BattleScene::Init()
 {
 
-	// Create a map to display for the battle
-	MapGenerator newMap(mapDimension);
+	// Create the world 
+	world_ = new GameWorld(100);
 
 	// Start the pathfinder thread
-	pathfinder = new PathFinder(newMap.GetStaticMapData(), mapDimension);
-	pathfinder1 = new PathFinder(newMap.GetStaticMapData(), mapDimension);
+	pathfinder = new PathFinder(world_->GetStaticPathfinderMap(), world_->GetMapDimension());
 
 	// Setup the view windows for main and minimaps
-	SetUpViewWindows();
+	// SetUpViewWindows();
 
 	// Get the map random map information (exluding extention - expects .xml and .png to have the same name)
-	tileMapRenderer = newMap.CreateRenderSystem("Textures/medievalRTS_spritesheet");
+	spriteRenderer_ = new SpriteRenderer("Textures/medievalRTS_spritesheet");
 
-	// create a render manager for the units
-	unitRenderer = new RenderManager(maxUnits, "Textures/medievalRTS_spritesheet");
-
-	// Spawn units on the map 
-	unitsWorld_ = new UnitWorld(mapDimension, maxUnits, newMap.GetStaticMapData(), *unitRenderer);
-
-	// Get a reference to all the created units
-	units_ = unitsWorld_->GetUnitList();
+	// Setup the gameobject list
+	units_ = new GameObjectManager(200, *world_);
+	projectiles_ = new GameObjectManager(200, *world_);
 
 	// Set the unit world
-	Projectile::SetWorld(unitsWorld_);
+	// Projectile::SetWorld(unitsWorld_);
+
+	// variable for team selecetion
+	Unit::TEAM teamSelection = Unit::TEAM::BLUE;
+
+	// Spawn Units in random locations
+	for (int i = 0; i < 200; i++)
+	{
+
+		// Assign a team (evenly)
+		if (teamSelection == Unit::TEAM::BLUE)
+		{
+			teamSelection = Unit::TEAM::RED;
+		}
+		else
+		{
+			teamSelection = Unit::TEAM::BLUE;
+		}
+
+		// Get a random tile
+		sf::Vector2i tile = world_->GetRandomFreeTile();
+
+		// Spawn the unit
+		Unit* unit = (Unit*)units_->SpawnObject(Unit(tile, teamSelection));
+
+		// Set the initial state
+		unit->ChangeState(*world_, new SearchAndDestoy(*unit));
+
+		// Create a new unit
+		world_->SetUnitOnTile(unit, tile);
+
+	}
 
 	// return to show error free;
 	return true;
@@ -45,14 +70,14 @@ bool BattleScene::Init()
 void BattleScene::CleanUp()
 {
 
-	delete pathfinder;
-	pathfinder = nullptr;
+	delete world_;
+	world_ = nullptr;
 
-	delete tileMapRenderer;
-	tileMapRenderer = nullptr;
+	delete spriteRenderer_;
+	spriteRenderer_ = nullptr;
 
-	delete unitRenderer;
-	unitRenderer = nullptr;
+	delete units_;
+	units_ = nullptr;
 
 }
 
@@ -91,30 +116,19 @@ void BattleScene::HandleInput(float delta_time)
 void BattleScene::Update(float delta_time)
 {
 
-	// update all the units
-	for (auto unit : units_)
-	{
+	// Prepare the unit update list
+	units_->PreProcessing();
 
-		// Update the state
-		unit->UpdateState(delta_time);
+	// Update the units
+	units_->Update(delta_time, *spriteRenderer_);
 
-		// check there is a valid unit to process
-		if (unit)
-		{
+	// Barrier here 
 
-			//if the units has moved on the map update the render map
-			if (unit->posDirty_)
-			{
-				unitRenderer->UpdateEntity(unit->GetEntityId(), unit->GetSpriteInfo());
-				unit->posDirty_ = false;
-			}
+	// Prepare the unit update list
+	projectiles_->PreProcessing();
 
-		}
-
-	}
-
-
-	Projectile::Update(delta_time);
+	// Update the Projectiles
+	projectiles_->Update(delta_time, *spriteRenderer_);
 
 }
 
@@ -123,34 +137,19 @@ void BattleScene::Render(sf::RenderWindow & window)
 {
 
 	// Main Render Function **********************
-	{
-		std::unique_lock<std::mutex> lock(windowEditor_);
-		window.setView(main_view);
-	}
+	//{
+	//	std::unique_lock<std::mutex> lock(windowEditor_);
+	//	window.setView(main_view);
+	//}
 
-	// Render Tiles 
-	{
-		std::unique_lock<std::mutex> lock(windowEditor_);
-		for (int tile = 0; tile < tileMapRenderer->getNumberOfEntities(); tile++)
-		{
-			window.draw(tileMapRenderer->RenderSprite(tile));
-		}
-	}
+	// Render World
+	spriteRenderer_->RenderFrame(window);
 
 	// Render Units
-	{
-		std::unique_lock<std::mutex> lock(windowEditor_);
-		for (int unit = 0; unit < unitRenderer->getNumberOfEntities(); unit++)
-		{
-			window.draw(unitRenderer->RenderSprite(unit));
-		}
-	}
+	// spriteRenderer_->RenderFrame(window);
 
 	// Render Arrows
-	 {
-	 	std::unique_lock<std::mutex> lock(windowEditor_);
-		Projectile::Render(window);
-	}
+	// spriteRenderer_->RenderFrame(window);
 
 
 }
@@ -158,6 +157,8 @@ void BattleScene::Render(sf::RenderWindow & window)
 
 void BattleScene::RenderUI(sf::RenderWindow & window)
 {
+
+	/*
 
 	//Minimap render function ***********************
 	{
@@ -183,7 +184,7 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 			window.draw(unitRenderer->RenderSprite(unit));
 		}
 	}
-	*/
+	
 
 	// Render the borders fro the minimap
 	{
@@ -218,6 +219,8 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 
 	}
 
+	*/
+
 }
 
 
@@ -236,7 +239,7 @@ void BattleScene::SetUpViewWindows()
 
 	// This is the fixed tile size of the ground tiles
 	const int tilesize = TILESIZE;
-	const int mapSize_dimensions = mapDimension;
+	const int mapSize_dimensions = world_->GetMapDimension();
 	int viewsize = tilesize * (mapSize_dimensions + 2); // 2 accounts for the border
 
 	// restict the view port to the bottom left of the screen with a border

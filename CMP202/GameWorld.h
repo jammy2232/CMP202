@@ -1,20 +1,25 @@
 #pragma once
 
+// Game Core Settings 
+#include "GameSettings.h"
+
+// std includes
 #include <mutex>
 #include <vector>
-#include "Unit.h"
-#include "RenderManager.h"
-#include <assert.h>
-#include "SearchAndDestoy.h"
-#include <atomic>
 
-// Purpose is to provide thread safe access to the map of unit positions
+// Game System includes
+#include "SpriteRenderer.h"
+
+// forward declaration 
+class Unit;
+
+// Purpose is to provide thread safe access to the map of unit positions, pathfinding information and create a render the tile map
 
 class GameWorld
 {
 public:
 
-	GameWorld(int mpatDimensions, int NumberOfUnits, std::vector<bool>& StaticMap, RenderManager& unitRenderer);
+	GameWorld(int mapDimensions);
 	~GameWorld();
 
 	// Get Unit information
@@ -26,17 +31,32 @@ public:
 	bool SetUnitOnTile(Unit* unit, sf::Vector2i tile);
 	void FreeUnitFromTile(sf::Vector2i tile);
 
+	// Setting of the wolrd
+	sf::Vector2i GetRandomFreeTile();
+
+	// This allows the pathfinder to be setup
+	std::vector<bool> GetStaticPathfinderMap() { return PathMap_; }
+
 	// Get Map Information 
 	int GetMapDimension() { return mapDimension_; }
 
 private:
 
+	// Spawning and creating the world
+	void GenerateRandomWolrd();
+
 	// Protect access to the unit list 
 	std::mutex lockmap_;
 	std::vector<Unit*> unitMap_;
 
+	// Protected Access to the game world information
+	// Used to calculate the path the units need to follow (true if walkable)
+	std::vector<bool> PathMap_;
+	// Data for Rendering Only (Tile set on the ground) 
+	std::vector<SpriteObject> TileMap_;
+
 	// Map information
-	int mapDimension_;
+	unsigned int mapDimension_;
 
 };
 
