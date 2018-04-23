@@ -28,6 +28,7 @@ protected:
 	// functions fundamental and data to all states
 	bool MoveTheUnit(GameWorld& world, float dt);
 	bool MoveBlocked() { return blocked; }
+	void TryMoveAgain() { blocked = false; blockingtime = 0.0f; }
 
 private:
 

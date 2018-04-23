@@ -153,10 +153,13 @@ void BattleScene::HandleInput(float delta_time)
 void BattleScene::Update(float dt)
 {
 
+	// Update the delta time
+
 	delta_time = dt;
 
-	// Update the world
-	world_->GenerateMap(*spriteRenderer_);
+	// Create the work lists
+	units_->CreateTaskList();
+	projectiles_->CreateTaskList();
 
 	// wait till all the threads have completed before flagging update complete
 
@@ -174,6 +177,9 @@ void BattleScene::Update(float dt)
 
 void BattleScene::Render(sf::RenderWindow & window)
 {
+
+	// Queue the world to be rendered
+	world_->GenerateMap(*spriteRenderer_);
 
 	// WAIT FOR DT TO BE SET
 	ProcessBarrier->wait();
@@ -306,8 +312,9 @@ void BattleScene::SetUpViewWindows()
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
 	// Main
-	main_view.setSize(currentResolution.width, currentResolution.height);
-	main_view.setCenter(currentResolution.width / 2.0f, currentResolution.height / 2.0f);
+	main_view.setSize(currentResolution.width * 5, currentResolution.height * 5);
+	main_view.setCenter(TILESIZE * world_->GetMapDimension()/ 2.0f, TILESIZE * world_->GetMapDimension() / 2.0f);
+	// main_view.setCenter(currentResolution.width / 2.0f, currentResolution.height / 2.0f);
 	main_view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 
 	// MiniMap

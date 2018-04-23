@@ -24,6 +24,8 @@ public:
 
 	// Process all the units
 	void Update(float delta_time, SpriteRenderer& renderer);
+	// Call to update the units to the queue for processing
+	void CreateTaskList();
 
 	// Spawn a new Unit
 	bool AddObject(GameObject* newObject);
@@ -36,8 +38,6 @@ private:
 	std::queue<int> freeSlots_;
 
 	// Thread processing queue
-	// Call to update the units to the queue for processing
-	void CreateTaskList();
 
 	std::mutex processingQueue_;
 	std::queue<GameObject*> objectsToProcess_;

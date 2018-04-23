@@ -90,6 +90,9 @@
     <ClCompile Include="Projectile.cpp">
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
+    <ClCompile Include="DataLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PathFinder.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="Projectile.h">
       <Filter>Header Files\AIUnits</Filter>
+    </ClInclude>
+    <ClInclude Include="DataLogger.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

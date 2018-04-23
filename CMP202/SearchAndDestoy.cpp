@@ -76,25 +76,32 @@ void SearchAndDestoy::Step(GameWorld& world, float dt)
 		if (MoveBlocked())
 		{
 
-			// Check for enemies
-			sf::Vector2i enemyLocation = CheckForEnemies(world, 5);
 
-			// if there is any enemies respond accordingly
-			if (enemyLocation.x != -1)
+			// Check if it's the enemy in the adjacent tile
+			if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
 			{
 
-				//Charge
-				unit_.SetTargetLocation(enemyLocation);
-				unit_.ChangeState(world, new Charge(unit_));
+				// Set the enemy location at the next ste
+				unit_.SetTargetLocation(unit_.GetTileDestination());
+
+				// Transision to fighting
+				unit_.ChangeState(world, new Fight(unit_));
+
+				// no more action required
 				return;
 
 			}
-			else
+			else if (world.CheckForUnit(unit_.GetTileDestination()))
 			{
-
-				// If you have a path but it's empty - reset this state
+				// Transision to fighting
 				unit_.ChangeState(world, new SearchAndDestoy(unit_));
 
+				// no more action required
+				return;
+			}
+			else
+			{
+				TryMoveAgain();
 			}
 
 		}
@@ -131,8 +138,8 @@ sf::Vector2i SearchAndDestoy::CheckForEnemies(GameWorld& world, int range)
 		for (int x = currentTile.x - range; x < (currentTile.x + range); x++)
 		{
 
-			// Validate the positions i.e. within the world
-			if (x > -1 && y > -1 && x < (mapDimension) && y < (mapDimension))
+			// Validate the positions i.e. within the world and not my position
+			if (x > -1 && y > -1 && x < (mapDimension) && y < (mapDimension) && x != currentTile.x && y != currentTile.y)
 			{
 
 				// Check of there is a valid unit there

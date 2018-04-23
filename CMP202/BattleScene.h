@@ -54,7 +54,7 @@ private:
 
 	// Map size information 
 	const int maxUnits = MAXUNITS;
-	const int maxProjectiles = MAXPROJECTILES;
+	const int maxProjectiles = MAXUNITS * 2;
 	const int mapSize = MAPSIZE;
 
 	// Loading and preperation functions

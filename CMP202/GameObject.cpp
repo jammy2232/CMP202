@@ -5,6 +5,7 @@ GameObject::GameObject()
 {
 
 	active_ = true;
+	deleted_ = false;
 
 }
 

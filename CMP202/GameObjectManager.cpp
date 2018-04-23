@@ -36,9 +36,6 @@ GameObjectManager::~GameObjectManager()
 void GameObjectManager::Update(float delta_time, SpriteRenderer & renderer)
 {
 
-	// Create the task list
-	CreateTaskList();
-
 	// Get a gameobject unit to process
 	GameObject* object = GetObjectToProcess();
 
@@ -81,13 +78,7 @@ void GameObjectManager::CreateTaskList()
 		if (object)
 		{
 
-			// if the unit is active
-			if (object->isActive())
-			{
-				std::unique_lock<std::mutex> lock(processingQueue_);
-				objectsToProcess_.push(object);
-			}
-			else if (object->isDeleted())
+			if (object->isDeleted())
 			{
 
 				// add this free slot to the free slots
@@ -99,6 +90,12 @@ void GameObjectManager::CreateTaskList()
 				// set the object to nullptr
 				objects_[indexTracker] = nullptr;
 
+			}
+			// if the unit is active
+			else if (object->isActive())
+			{
+				std::unique_lock<std::mutex> lock(processingQueue_);
+				objectsToProcess_.push(object);
 			}
 
 		}

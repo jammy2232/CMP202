@@ -4,9 +4,9 @@
 #define TILESIZE 128.0f
 
 // Battle Information
-#define MAXUNITS 200
-#define MAPSIZE 50
-#define MAXPROJECTILES 200
+#define MAXUNITS 10000
+#define MAPSIZE 200
+#define MAXPROJECTILES 20
 #define DISPLAYMINIMAP true
 
 // Unit Setting

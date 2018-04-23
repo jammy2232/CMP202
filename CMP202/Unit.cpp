@@ -29,9 +29,6 @@ void Unit::Init(GameWorld & world, AiState* gameState)
 	// Setup the initial state 
 	ChangeState(world, gameState);
 
-	// Place the unit on the map
-	world.SetUnitOnTile(this, currentTile);
-
 }
 
 

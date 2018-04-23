@@ -4,6 +4,8 @@
 Projectile::Projectile(sf::Vector2f Start, sf::Vector2i TargetTile)
 {
 
+	setActive(true);
+
 	// Set the starting location
 	sprite_.screen_position = Start;
 	// set the sprite 

@@ -18,7 +18,7 @@ GameManager::GameManager()
 	currentScene_ = (Scene*)new LoadingScene();
 
 	// Attempt to load the graphics for it 
-	assert(currentScene_->Init());
+	currentScene_->Init();
 
 	// Set the instance 
 	instance_ = this;
@@ -40,9 +40,6 @@ GameManager::~GameManager()
 
 GameManager * const GameManager::Create()
 {
-
-	// Check if there is already an instance of gameManager
-	assert(instance_ == nullptr);
 
 	// Create a new instance of gamemanger
 	instance_ = new GameManager();
@@ -93,7 +90,7 @@ void GameManager::Render(sf::RenderWindow* window)
 	{
 
 		// Clear the current window
-		window->clear(sf::Color::Black);
+		window->clear(sf::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
 		// Lock the render access
 		std::unique_lock<std::mutex> lock(sceneAccessRender);
@@ -115,14 +112,11 @@ void GameManager::Render(sf::RenderWindow* window)
 void GameManager::SceneTransition(Scene * scene)
 {
 
-	// Ensure the game manager exists
-	assert(instance_);
-
 	// Initialise the loading Scene with the game manager instance
 	instance_->sceneToLoad_ = (Scene*)new LoadingScene();
 
 	// Attempt to load the graphics for it 
-	assert(instance_->sceneToLoad_->Init());
+	instance_->sceneToLoad_->Init();
 
 	// Keep track of the existing scene and the new scene to be loaded
 	instance_->sceneToCleanUp_ = instance_->currentScene_;
@@ -174,7 +168,7 @@ void GameManager::LoadNewScene()
 	sceneToCleanUp_ = nullptr;
 
 	// Load the new scene 
-	assert(sceneToLoad_->Init());
+	sceneToLoad_->Init();
 
 	// Call to switch the scenes
 	SwitchToLoadedScene();

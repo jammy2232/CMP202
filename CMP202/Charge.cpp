@@ -51,13 +51,8 @@ void Charge::Step(GameWorld& world, float dt)
 		if (MoveBlocked())
 		{
 
-			if (!world.CheckForUnit(unit_.GetTileDestination()))
-			{
-				// Do nothing
-			}
-
 			// Check if it's the enemy in the adjacent tile
-			else if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
+			if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
 			{
 
 				// Set the enemy location at the next ste
@@ -69,6 +64,14 @@ void Charge::Step(GameWorld& world, float dt)
 				// no more action required
 				return;
 
+			}
+			else if (world.CheckForUnit(unit_.GetTileDestination()))
+			{
+				// Transision to fighting
+				unit_.ChangeState(world, new SearchAndDestoy(unit_));
+
+				// no more action required
+				return;
 			}
 
 		}

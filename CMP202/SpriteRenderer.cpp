@@ -95,6 +95,9 @@ void SpriteRenderer::DrawSprite(SpriteObject& sprite)
 	// Lock the queue for thread safety
 	std::unique_lock<std::mutex> lock(renderQueueLock_);
 
+	// 
+	assert(sprite.id > -1 && sprite.id < 200);
+
 	// Add the object to be rendered
 	renderQueue_.push(sprite);
 

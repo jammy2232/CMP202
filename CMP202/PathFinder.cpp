@@ -319,10 +319,12 @@ void PathFinder::Work()
 		Reset();
 
 		// Complete the task
-		task.unit->SetPath(findPath(task.start, task.destination));
+		if (task.unit)
+			task.unit->SetPath(findPath(task.start, task.destination));
 
 		// Flag the path complete
-		task.unit->waitingPathRequestFlag = false;
+		if(task.unit)
+			task.unit->waitingPathRequestFlag = false;
 
 	}
 

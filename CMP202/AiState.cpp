@@ -152,7 +152,7 @@ bool AiState::wait(float dt)
 	
 	blockingtime += dt;
 
-	// Wait upto 10 seconds blocked
+	// Wait upto 0.5 seconds blocked
 	if (blockingtime > 0.5f)
 	{
 		blockingtime = 0.0f;
