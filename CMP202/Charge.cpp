@@ -51,9 +51,17 @@ void Charge::Step(GameWorld& world, float dt)
 		if (MoveBlocked())
 		{
 
-			// Check if it's the enemy in the adjacent tile
-			if (world.GetUnitInfo(unit_.GetTileDestination())->GetTeam() != unit_.GetTeam())
+			if (!world.CheckForUnit(unit_.GetTileDestination()))
 			{
+				// Do nothing
+			}
+
+			// Check if it's the enemy in the adjacent tile
+			else if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
+			{
+
+				// Set the enemy location at the next ste
+				unit_.SetTargetLocation(unit_.GetTileDestination());
 
 				// Transision to fighting
 				unit_.ChangeState(world, new Fight(unit_));
@@ -106,11 +114,16 @@ bool Charge::CheckPathIsValid(GameWorld& world)
 	// Check that the unit is till on the path
 	for (auto step : path)
 	{
-		if (world.GetUnitInfo(step)->GetTeam() == unit_.GetTeam())
+
+		// Check if it's friend or foe
+		if (world.CheckForUnit(step) && (world.GetUnitTeam(step) != unit_.GetTeam()))
 		{
 			return true;
 		}
+
 	}
+
 	return false;
+
 }
 

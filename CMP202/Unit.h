@@ -12,12 +12,13 @@
 #include <atomic>
 
 // Game Systems
-#include "GameObject.h"
 #include "SpriteRenderer.h"
-#include "GameWorld.h"
-#include "PathFinder.h"
 #include "AiState.h"
+#include "GameObject.h"
 
+// forward declarations
+// class GameWorld;
+class AiState;
 
 class Unit : public GameObject
 {
@@ -29,6 +30,9 @@ public:
 	// Construction
 	Unit(sf::Vector2i position = sf::Vector2i(0,0), TEAM team = NONE);
 	~Unit();
+
+	// Init
+	void Init(GameWorld& world, AiState* gameState);
 
 	// Handling state update and transition returning the render request
 	SpriteObject& Update(GameWorld& world, float delta_time);
@@ -59,11 +63,7 @@ public:
 	// Damaging a unit (Thread Safe access) accessed through the game map
 	void Damage(int Amount) { health -= Amount; }
 	int GetHealth() { return health; }
-	TEAM GetTeam() const;
-
-	// Update the sprite info
-	void SetScreenPosition(sf::Vector2f position);
-	void SetSpriteId(int id);
+	int GetTeam() const;
 
 	// Enquire about the units last sighting
 	void SetTargetLocation(sf::Vector2i location) {	enemyLocation_ = location;	}
@@ -90,9 +90,6 @@ private:
 	TEAM team_;
 	sf::Vector2i currentTile;
 	std::atomic<int> health = 100;
-
-	// Unit Rendering informaiton 
-	SpriteObject sprite_;
 
 };
 

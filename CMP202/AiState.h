@@ -1,9 +1,11 @@
 #pragma once
 
 #include "SFML\System\Vector2.hpp"
+#include "Unit.h"
 #include "GameWorld.h"
 
 class Unit;
+class GameWorld;
 
 class AiState
 {

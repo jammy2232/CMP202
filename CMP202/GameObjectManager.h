@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 
+class GameWorld;
 
 class GameObjectManager
 {
@@ -21,23 +22,23 @@ public:
 	GameObjectManager(int ObjectCap, GameWorld& gameWorld);
 	~GameObjectManager();
 
-	// Call to update the units to the queue for processing
-	void PreProcessing();
-
 	// Process all the units
 	void Update(float delta_time, SpriteRenderer& renderer);
 
 	// Spawn a new Unit
-	GameObject* SpawnObject(GameObject newObject);
+	bool AddObject(GameObject* newObject);
 
 private:
 
 	// Vector to store the unit informaiton 
 	std::mutex objectList_;
-	std::vector<GameObject> objects_;
+	std::vector<GameObject*> objects_;
 	std::queue<int> freeSlots_;
 
 	// Thread processing queue
+	// Call to update the units to the queue for processing
+	void CreateTaskList();
+
 	std::mutex processingQueue_;
 	std::queue<GameObject*> objectsToProcess_;
 
@@ -48,4 +49,3 @@ private:
 	GameWorld& gameWorld_;
 
 };
-

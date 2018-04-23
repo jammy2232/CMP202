@@ -159,18 +159,20 @@
     <ClCompile Include="Fight.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PathFinder.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="SearchAndDestoy.cpp" />
     <ClCompile Include="Semaphor.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="Unit.cpp" />
-    <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="GameWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AiState.h" />
+    <ClInclude Include="Barrier.h" />
     <ClInclude Include="BattleScene.h" />
     <ClInclude Include="Charge.h" />
     <ClInclude Include="Death.h" />
@@ -180,6 +182,7 @@
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="PathFinder.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SearchAndDestoy.h" />
     <ClInclude Include="Semaphor.h" />

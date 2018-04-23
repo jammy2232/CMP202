@@ -35,14 +35,40 @@ bool GameWorld::CheckForUnit(sf::Vector2i tile)
 }
 
 
-Unit* GameWorld::GetUnitInfo(sf::Vector2i tile)
+int GameWorld::GetUnitTeam(sf::Vector2i tile)
 {
 
 	// Lock the data access 
 	std::unique_lock<std::mutex> lock(lockmap_);
 
-	// Return a copy of the data
-	return (unitMap_[tile.y * mapDimension_ + tile.x]);
+	// if there is no unit 
+	if (!unitMap_[tile.y * mapDimension_ + tile.x])
+	{
+		// Default no unit
+		return -1;
+	}
+
+	// Return a copy of the data the units team
+	return (unitMap_[tile.y * mapDimension_ + tile.x]->GetTeam());
+
+}
+
+
+void GameWorld::AttackUnitOnTile(sf::Vector2i tile, int amount)
+{
+
+	// Lock the data access 
+	std::unique_lock<std::mutex> lock(lockmap_);
+
+	// if there is no unit 
+	if (!unitMap_[tile.y * mapDimension_ + tile.x])
+	{
+		// Default no unit
+		return;
+	}
+
+	// Return a copy of the data the units team
+	unitMap_[tile.y * mapDimension_ + tile.x]->Damage(amount);
 
 }
 
@@ -124,6 +150,18 @@ sf::Vector2i GameWorld::GetRandomFreeTile()
 
 }
 
+
+
+void GameWorld::GenerateMap(SpriteRenderer& renderer)
+{
+
+	// For each tile in the map Render yourself
+	for (auto tile : TileMap_)
+	{
+		renderer.DrawSprite(tile);
+	}
+
+}
 
 
 void GameWorld::GenerateRandomWolrd()

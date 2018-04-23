@@ -9,7 +9,6 @@
 // Static initialisation
 GameManager* GameManager::instance_ = nullptr;
 
-
 GameManager::GameManager()
 {
 
@@ -174,7 +173,7 @@ void GameManager::LoadNewScene()
 	sceneToCleanUp_->CleanUp();
 	sceneToCleanUp_ = nullptr;
 
-	// load the new scene
+	// Load the new scene 
 	assert(sceneToLoad_->Init());
 
 	// Call to switch the scenes

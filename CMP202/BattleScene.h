@@ -9,17 +9,22 @@
 // std library functions
 #include <vector>
 #include <thread>
-
-// Systems
-#include "PathFinder.h"
-#include "SpriteRenderer.h"
-#include "GameWorld.h"
-#include "GameObjectManager.h"
+#include "Barrier.h"
+#include <mutex>
 
 // Units
 #include "Unit.h"
+#include "Projectile.h"
 #include "SearchAndDestoy.h"
 
+// Systems
+#include "SpriteRenderer.h"
+#include "GameWorld.h"
+#include "GameObjectManager.h"
+#include "PathFinder.h"
+
+class PathFinder;
+class Projectile;
 
 class BattleScene :	public Scene
 {
@@ -34,28 +39,35 @@ public:
 	
 	// Main Scene loop
 	void HandleInput(float delta_time);
-	void Update(float delta_time);
+
+	void Update(float dt);
+
 	void Render(sf::RenderWindow& window);
 	void RenderUI(sf::RenderWindow& window);
+
+
+	// Spawning 
+	static void SpawnAttack(Projectile* attack);
+	// static void SpawnUnit(Projectile* attack);
 
 private:
 
 	// Map size information 
-	const int maxUnits = 300;
+	const int maxUnits = MAXUNITS;
+	const int maxProjectiles = MAXPROJECTILES;
+	const int mapSize = MAPSIZE;
 
 	// Loading and preperation functions
 	void SetUpViewWindows();
 
 	// Thread safety for rendering
 	std::mutex windowEditor_;
+
+	// Worker Threads
+	std::vector<std::thread*> workers_;
 	
 	// Pathfiding system
-	PathFinder* pathfinder = nullptr;
-
-
-	// Unit update threads
-	// std::thread* unitupdate0 = nullptr;
-	// std::thread* unitupdate1 = nullptr;
+	std::vector<PathFinder*> pathfinder;
 
 	// Game World
 	GameWorld* world_;
@@ -67,7 +79,18 @@ private:
 	GameObjectManager* units_;
 	GameObjectManager* projectiles_;
 
+	// Render Barrier
+	Barrier* ProcessBarrier;
 
+	// Static reference for spawning objects
+	static BattleScene* instance_;
+
+	// delta time reference
+	void ProcessUnits();
+	std::atomic<float> delta_time;
+
+	// This controls the worker threads
+	std::atomic<bool> play = true;
 
 };
 

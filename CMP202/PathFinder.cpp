@@ -57,10 +57,11 @@ PathFinder::PathFinder(const std::vector<bool> baseTileMap, int MapDimensions) :
 
 	//Start
 	required = true;
-
-	// Initialise the thread
+	
+	// setup the internal thread 
 	worker_ = new std::thread(&PathFinder::Work, this);
 	worker_->detach();
+
 
 }
 
@@ -70,6 +71,9 @@ PathFinder::~PathFinder()
 
 	// shutdown the worker thread
 	required = false;
+
+	// Delete all the threads
+	delete worker_;
 
 }
 

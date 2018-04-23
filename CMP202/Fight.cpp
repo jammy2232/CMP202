@@ -34,7 +34,7 @@ void Fight::Step(GameWorld& world, float dt)
 	}
 
 	// Check the enemy is still valid
-	if (!world.GetUnitInfo(unit_.GetTargetLocation()) || world.GetUnitInfo(unit_.GetTargetLocation())->GetTeam() == unit_.GetTeam())
+	if (!world.CheckForUnit(unit_.GetTargetLocation()) || world.GetUnitTeam(unit_.GetTargetLocation()) == unit_.GetTeam())
 	{
 
 		// The enemy unit is gone
@@ -47,8 +47,13 @@ void Fight::Step(GameWorld& world, float dt)
 	if (attackTimer_ > 1.0f)
 	{
 		
-		// Implement this still
-		// Projectile::SpawnProjectile(unit_->GetCurrentPoint(), unit_->GetCurrentTarget()->GetCurrentPoint(), unit_->GetCurrentTargetTile());
+		// Create the attack
+		Projectile* tempAttack = new Projectile(unit_.GetCurrentPoint(), unit_.GetTargetLocation());
+
+		// Spawn it on the level
+		BattleScene::SpawnAttack(tempAttack);
+
+		// Reset the attack timer
 		attackTimer_ = 0.0f;
 
 	}

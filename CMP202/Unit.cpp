@@ -1,7 +1,9 @@
 #include "Unit.h"
 
 
-Unit::Unit(sf::Vector2i position, TEAM team) : team_(team)
+Unit::Unit(sf::Vector2i position, TEAM team) : 
+	team_(team),
+	currentState_(nullptr)
 {
 
 	// Set the current tile position
@@ -18,6 +20,17 @@ Unit::~Unit()
 {
 
 	delete currentState_;
+
+}
+
+void Unit::Init(GameWorld & world, AiState* gameState)
+{
+
+	// Setup the initial state 
+	ChangeState(world, gameState);
+
+	// Place the unit on the map
+	world.SetUnitOnTile(this, currentTile);
 
 }
 
@@ -129,28 +142,11 @@ void Unit::SetCurrentTile(sf::Vector2i tile)
 }
 
 
-Unit::TEAM Unit::GetTeam() const
+int Unit::GetTeam() const
 {
 
 	// Get the next path desitnation 
-	return team_;
-
-}
-
-void Unit::SetScreenPosition(sf::Vector2f position)
-{
-
-	// Lock the access to be updated
-	sprite_.screen_position = position;
-
-}
-
-
-void Unit::SetSpriteId(int id)
-{
-
-	// Lock the access to be updated
-	sprite_.id = id;
+	return (int)team_;
 
 }
 
@@ -168,12 +164,12 @@ void Unit::UpdateDestination()
 		return;
 	}
 
-	// Get the next path desitnation 
-	path_.pop_front();
-
 	// Apply the new information
 	tileDestination = path_.front();
 	pointDestination = sf::Vector2f(tileDestination.x * TILESIZE, tileDestination.y * TILESIZE);
+
+	// Get the next path desitnation 
+	path_.pop_front();
 
 }
 

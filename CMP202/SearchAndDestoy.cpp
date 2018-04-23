@@ -132,18 +132,15 @@ sf::Vector2i SearchAndDestoy::CheckForEnemies(GameWorld& world, int range)
 		{
 
 			// Validate the positions i.e. within the world
-			if (x > -1 && y > -1 && x < (mapDimension - 1) && y < (mapDimension - 1))
+			if (x > -1 && y > -1 && x < (mapDimension) && y < (mapDimension))
 			{
 
-				// Get the pointer to the unit on the tile
-				const Unit* UnitOnTile = world.GetUnitInfo(sf::Vector2i(x, y));
-
 				// Check of there is a valid unit there
-				if (UnitOnTile != nullptr)
+				if (world.CheckForUnit(sf::Vector2i(x, y)))
 				{
 
 					// Check the team of that unit
-					if (UnitOnTile->GetTeam() != unit_.GetTeam())
+					if (world.GetUnitTeam(sf::Vector2i(x, y)) != unit_.GetTeam())
 					{
 
 						int enemDist = (x - currentTile.x)*(x - currentTile.x) + (y - currentTile.y)*(y - currentTile.y);

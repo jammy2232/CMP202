@@ -1,8 +1,14 @@
 #pragma once
 
-#include "AiState.h"
-#include "Unit.h"
+// Std includes
 #include<list>
+
+// Game Systems
+#include "AiState.h"
+#include "GameWorld.h"
+#include "Unit.h"
+
+// Other transitions states
 #include "SearchAndDestoy.h"
 #include "Fight.h"
 #include "Death.h"

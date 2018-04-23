@@ -1,18 +1,15 @@
 #pragma once
 
-// base class and units
-#include "Unit.h"
-
 // SFML information
 #include "SFML\System\Vector2.hpp"
 
-// States and transitions
+// Game systems
 #include "GameWorld.h"
 #include "AiState.h"
-#include "Charge.h"
+#include "Unit.h"
 
-// Forward Declarations
-class Unit;
+// States and transitions#include "Charge.h"
+#include "Charge.h"
 
 class SearchAndDestoy : public AiState
 {

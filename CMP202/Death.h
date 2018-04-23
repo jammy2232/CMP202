@@ -1,6 +1,8 @@
 #pragma once
-#include "AiState.h"
 
+// Game Systems
+#include "AiState.h"
+#include "GameWorld.h"
 #include "Unit.h"
 
 class Death : public AiState

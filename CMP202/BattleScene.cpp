@@ -1,40 +1,52 @@
 #include "BattleScene.h"
 
+BattleScene* BattleScene::instance_ = nullptr;
 
 BattleScene::BattleScene()
-{}
+{
+
+	// Create instance
+	instance_ = this;
+
+	// Setup barrier objects and threads
+	ProcessBarrier = new Barrier(1 + 1 + PROCESSINGTHEADS);
+
+}
+
 
 BattleScene::~BattleScene()
 {
+	CleanUp();
 }
+
 
 bool BattleScene::Init()
 {
 
 	// Create the world 
-	world_ = new GameWorld(100);
+	world_ = new GameWorld(mapSize);
 
-	// Start the pathfinder thread
-	pathfinder = new PathFinder(world_->GetStaticPathfinderMap(), world_->GetMapDimension());
-
+	// Start the pathfinder threads
+	for (int threads = 0; threads < PATHFINDINGTHEADS; threads++)
+	{
+		pathfinder.push_back(new PathFinder(world_->GetStaticPathfinderMap(), world_->GetMapDimension()));
+	}
+	
 	// Setup the view windows for main and minimaps
-	// SetUpViewWindows();
+	SetUpViewWindows();
 
 	// Get the map random map information (exluding extention - expects .xml and .png to have the same name)
 	spriteRenderer_ = new SpriteRenderer("Textures/medievalRTS_spritesheet");
 
 	// Setup the gameobject list
-	units_ = new GameObjectManager(200, *world_);
-	projectiles_ = new GameObjectManager(200, *world_);
-
-	// Set the unit world
-	// Projectile::SetWorld(unitsWorld_);
+	units_ = new GameObjectManager(maxUnits, *world_);
+	projectiles_ = new GameObjectManager(maxProjectiles, *world_);
 
 	// variable for team selecetion
 	Unit::TEAM teamSelection = Unit::TEAM::BLUE;
 
 	// Spawn Units in random locations
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < maxUnits; i++)
 	{
 
 		// Assign a team (evenly)
@@ -51,13 +63,24 @@ bool BattleScene::Init()
 		sf::Vector2i tile = world_->GetRandomFreeTile();
 
 		// Spawn the unit
-		Unit* unit = (Unit*)units_->SpawnObject(Unit(tile, teamSelection));
+		Unit* unit = new Unit(tile, teamSelection);
 
-		// Set the initial state
-		unit->ChangeState(*world_, new SearchAndDestoy(*unit));
+		// Setup the new unit
+		unit->Init(*world_, new SearchAndDestoy(*unit));
+
+		// Add the unit to the manager
+		units_->AddObject(unit);
 
 		// Create a new unit
 		world_->SetUnitOnTile(unit, tile);
+
+	}
+
+	// Setup the worker threads
+	for (int threads = 0; threads < PROCESSINGTHEADS; threads++)
+	{
+		workers_.push_back(new std::thread(&BattleScene::ProcessUnits, this));
+		workers_[threads]->detach();
 
 	}
 
@@ -70,6 +93,8 @@ bool BattleScene::Init()
 void BattleScene::CleanUp()
 {
 
+	play = false;
+
 	delete world_;
 	world_ = nullptr;
 
@@ -78,6 +103,18 @@ void BattleScene::CleanUp()
 
 	delete units_;
 	units_ = nullptr;
+
+	// Delete all pathfiding modules
+	for (auto pathf : pathfinder)
+	{
+		delete pathf;
+	}
+
+	// Clean up the worker threads
+	for (auto worker : workers_)
+	{
+		delete worker;
+	}
 
 }
 
@@ -113,22 +150,24 @@ void BattleScene::HandleInput(float delta_time)
 }
 
 
-void BattleScene::Update(float delta_time)
+void BattleScene::Update(float dt)
 {
 
-	// Prepare the unit update list
-	units_->PreProcessing();
+	delta_time = dt;
 
-	// Update the units
-	units_->Update(delta_time, *spriteRenderer_);
+	// Update the world
+	world_->GenerateMap(*spriteRenderer_);
 
-	// Barrier here 
+	// wait till all the threads have completed before flagging update complete
 
-	// Prepare the unit update list
-	projectiles_->PreProcessing();
+	// WAIT FOR DT TO BE SET
+	ProcessBarrier->wait();
 
-	// Update the Projectiles
-	projectiles_->Update(delta_time, *spriteRenderer_);
+	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
+	ProcessBarrier->wait();
+
+	// END OF FRAME ALL RENDERING COMPLETE
+	ProcessBarrier->wait();
 
 }
 
@@ -136,21 +175,23 @@ void BattleScene::Update(float delta_time)
 void BattleScene::Render(sf::RenderWindow & window)
 {
 
-	// Main Render Function **********************
-	//{
-	//	std::unique_lock<std::mutex> lock(windowEditor_);
-	//	window.setView(main_view);
-	//}
+	// WAIT FOR DT TO BE SET
+	ProcessBarrier->wait();
 
-	// Render World
+	// Main Render Function **********************
+	{
+		std::unique_lock<std::mutex> lock(windowEditor_);
+		window.setView(main_view);
+	}
+
+	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
+	ProcessBarrier->wait();
+
+	// Render all the processed Projectiles
 	spriteRenderer_->RenderFrame(window);
 
-	// Render Units
-	// spriteRenderer_->RenderFrame(window);
-
-	// Render Arrows
-	// spriteRenderer_->RenderFrame(window);
-
+	// END OF FRAME ALL RENDERING COMPLETE
+	ProcessBarrier->wait();
 
 }
 
@@ -220,6 +261,40 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 	}
 
 	*/
+
+}
+
+
+void BattleScene::ProcessUnits()
+{
+
+	while (play)
+	{
+
+		// WAIT FOR DT TO BE SET
+		ProcessBarrier->wait();
+
+		// Proecess the world, units and projectiles
+		units_->Update(delta_time, *spriteRenderer_);
+		projectiles_->Update(delta_time, *spriteRenderer_);
+
+		// ALL PROCESSING COMPLETE
+		ProcessBarrier->wait();
+
+		// RENDERING TO THE SCREEN
+
+		// END OF FRAME ALL RENDERING COMPLETE
+		ProcessBarrier->wait();
+
+	}
+
+}
+
+
+void BattleScene::SpawnAttack(Projectile* attack)
+{
+
+	instance_->projectiles_->AddObject(attack);
 
 }
 

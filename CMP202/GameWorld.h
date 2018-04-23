@@ -9,6 +9,7 @@
 
 // Game System includes
 #include "SpriteRenderer.h"
+#include "Unit.h"
 
 // forward declaration 
 class Unit;
@@ -24,8 +25,11 @@ public:
 
 	// Get Unit information
 	bool CheckForUnit(sf::Vector2i tile);
-	Unit* GetUnitInfo(sf::Vector2i tile);
 	std::vector<Unit*> GetUnitList();
+
+	// Functions on the units
+	int GetUnitTeam(sf::Vector2i tile);
+	void AttackUnitOnTile(sf::Vector2i tile, int amount);
 
 	// Updating the world
 	bool SetUnitOnTile(Unit* unit, sf::Vector2i tile);
@@ -39,6 +43,9 @@ public:
 
 	// Get Map Information 
 	int GetMapDimension() { return mapDimension_; }
+
+	// RenderMap
+	void GenerateMap(SpriteRenderer& renderer);
 
 private:
 

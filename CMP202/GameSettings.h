@@ -1,10 +1,21 @@
 #pragma once
 
-// Map Information for Testing
+// Map Information
 #define TILESIZE 128.0f
+
+// Battle Information
+#define MAXUNITS 200
+#define MAPSIZE 50
+#define MAXPROJECTILES 200
+#define DISPLAYMINIMAP true
 
 // Unit Setting
 #define UNITSPEED 60.0f
 #define UNITHEALTH 100
 #define UNITATTACK 10
 #define PROJECTILESPEED 120.0f
+
+// Thread Settings
+#define PATHFINDINGTHEADS 5
+#define PROCESSINGTHEADS 5
+#define FORCESINGLETHREAD false

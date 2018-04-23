@@ -2,6 +2,9 @@
 
 #include "SpriteRenderer.h"
 
+class GameWorld;
+struct SpriteObject;
+
 class GameObject
 {
 
@@ -19,13 +22,22 @@ public:
 	void setDeleted(bool deleted) {	deleted_ = deleted;	}
 
 	// virtual functions for processing gameobjects
-	virtual SpriteObject& Update(float deltaTime) { return SpriteObject(); }
+	virtual SpriteObject& Update(GameWorld& world, float deltaTime) = 0;
+
+	// Update the sprite info
+	void SetScreenPosition(sf::Vector2f position);
+	void SetSpriteId(int id);
 
 private:
 
 	// internal bools
 	bool active_;
 	bool deleted_;
+
+protected:
+
+	// Sprite Rendering Information 
+	SpriteObject sprite_;
 
 };
 
