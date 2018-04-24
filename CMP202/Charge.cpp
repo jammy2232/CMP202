@@ -52,7 +52,7 @@ void Charge::Step(GameWorld& world, float dt)
 		{
 
 			// Check if it's the enemy in the adjacent tile
-			if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
+			if (world.GetUnitTeam(unit_.GetTileDestination()) != world.GetUnitTeam(unit_.GetCurrentTile()))
 			{
 
 				// Set the enemy location at the next ste
@@ -119,7 +119,7 @@ bool Charge::CheckPathIsValid(GameWorld& world)
 	{
 
 		// Check if it's friend or foe
-		if (world.CheckForUnit(step) && (world.GetUnitTeam(step) != unit_.GetTeam()))
+		if (world.CheckForUnit(step) && (world.GetUnitTeam(step) != world.GetUnitTeam(unit_.GetCurrentTile())))
 		{
 			return true;
 		}

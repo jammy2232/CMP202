@@ -78,7 +78,7 @@ void SearchAndDestoy::Step(GameWorld& world, float dt)
 
 
 			// Check if it's the enemy in the adjacent tile
-			if (world.GetUnitTeam(unit_.GetTileDestination()) != unit_.GetTeam())
+			if (world.GetUnitTeam(unit_.GetTileDestination()) != world.GetUnitTeam(unit_.GetCurrentTile()))
 			{
 
 				// Set the enemy location at the next ste
@@ -147,7 +147,7 @@ sf::Vector2i SearchAndDestoy::CheckForEnemies(GameWorld& world, int range)
 				{
 
 					// Check the team of that unit
-					if (world.GetUnitTeam(sf::Vector2i(x, y)) != unit_.GetTeam())
+					if (world.GetUnitTeam(sf::Vector2i(x, y)) != world.GetUnitTeam(unit_.GetCurrentTile()))
 					{
 
 						int enemDist = (x - currentTile.x)*(x - currentTile.x) + (y - currentTile.y)*(y - currentTile.y);

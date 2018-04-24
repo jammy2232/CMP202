@@ -13,10 +13,16 @@
 #include <thread>
 #include <memory>
 
+// data logger 
+#include "DataLogger.h"
+
 
 // Main Thread handling game system updates
 int main()
 {
+
+	// Create a new system for data logging
+	DataLogger logger("GameData.csv");
 
 	// Seed the random number generator
 	srand(time(NULL));

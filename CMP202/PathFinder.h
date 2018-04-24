@@ -7,6 +7,7 @@
 #include <list>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 // Game inclides
 #include "SFML\System\Vector2.hpp"
@@ -27,6 +28,8 @@ public:
 	~PathFinder();
 
 	static void RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destination);
+	std::atomic<bool> required = false;
+	std::atomic<bool> active = true;
 
 private:
 
@@ -60,7 +63,6 @@ private:
 	std::thread* worker_;
 	static Semaphor requests_;
 	static std::mutex queue;
-	bool required = false;
 
 };
 

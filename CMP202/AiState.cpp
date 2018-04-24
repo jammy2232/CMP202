@@ -108,9 +108,16 @@ bool AiState::MovePossible(GameWorld& world)
 
 	// if it's possible update the world with this units intention to move
 	// Set the new tile to taken
-	world.SetUnitOnTile(&unit_, unit_.GetTileDestination());
+	if (!world.SetUnitOnTile(&unit_, unit_.GetTileDestination()))
+	{
+		assert(false);
+	}
+
 	// release the old tile
 	world.FreeUnitFromTile(unit_.GetCurrentTile());
+
+	// Set the units position 
+	unit_.SetCurrentTile(unit_.GetTileDestination());
 
 	// flag success
 	return true;
@@ -135,7 +142,6 @@ bool AiState::incrementMovement(float dt)
 
 		// the unit is pasted the intended position so therefore set the position
 		unit_.SetScreenPosition(unit_.GetPointDestination());
-		unit_.SetCurrentTile(unit_.GetTileDestination());
 		unit_.UpdateDestination();
 		return true;
 

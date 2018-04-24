@@ -62,17 +62,12 @@ PathFinder::PathFinder(const std::vector<bool> baseTileMap, int MapDimensions) :
 	worker_ = new std::thread(&PathFinder::Work, this);
 	worker_->detach();
 
-
 }
 
 
 PathFinder::~PathFinder()
 {
 
-	// shutdown the worker thread
-	required = false;
-
-	// Delete all the threads
 	delete worker_;
 
 }
@@ -327,6 +322,9 @@ void PathFinder::Work()
 			task.unit->waitingPathRequestFlag = false;
 
 	}
+
+	//flag the worker has broke it's loop
+	active = false;
 
 }
 

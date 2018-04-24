@@ -4,9 +4,8 @@
 #define TILESIZE 128.0f
 
 // Battle Information
-#define MAXUNITS 10000
-#define MAPSIZE 200
-#define MAXPROJECTILES 20
+#define MAXUNITS 2500
+#define MAPSIZE 60
 #define DISPLAYMINIMAP true
 
 // Unit Setting
@@ -16,6 +15,6 @@
 #define PROJECTILESPEED 120.0f
 
 // Thread Settings
-#define PATHFINDINGTHEADS 5
-#define PROCESSINGTHEADS 5
+#define PATHFINDINGTHEADS 10
+#define PROCESSINGTHEADS 1
 #define FORCESINGLETHREAD false

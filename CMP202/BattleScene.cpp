@@ -10,6 +10,9 @@ BattleScene::BattleScene()
 
 	// Setup barrier objects and threads
 	ProcessBarrier = new Barrier(1 + 1 + PROCESSINGTHEADS);
+	RenderBarrier = new Barrier(1 + 1 + PROCESSINGTHEADS);
+	FrameEndBarrier = new Barrier(1 + 1 + PROCESSINGTHEADS);
+
 
 }
 
@@ -93,7 +96,22 @@ bool BattleScene::Init()
 void BattleScene::CleanUp()
 {
 
+	// Stop playing
 	play = false;
+
+	// Delete all pathfiding modules
+	for (auto pathf : pathfinder)
+	{
+		pathf->required = false;
+
+		while (pathf->active)
+		{
+			// wait
+		}
+
+		delete pathf;
+
+	}
 
 	delete world_;
 	world_ = nullptr;
@@ -103,12 +121,6 @@ void BattleScene::CleanUp()
 
 	delete units_;
 	units_ = nullptr;
-
-	// Delete all pathfiding modules
-	for (auto pathf : pathfinder)
-	{
-		delete pathf;
-	}
 
 	// Clean up the worker threads
 	for (auto worker : workers_)
@@ -154,8 +166,10 @@ void BattleScene::Update(float dt)
 {
 
 	// Update the delta time
-
 	delta_time = dt;
+
+	// Store the frame rate counter
+	DataLogger::LogValue("FPS", 1 / delta_time);
 
 	// Create the work lists
 	units_->CreateTaskList();
@@ -167,10 +181,10 @@ void BattleScene::Update(float dt)
 	ProcessBarrier->wait();
 
 	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
-	ProcessBarrier->wait();
+	RenderBarrier->wait();
 
 	// END OF FRAME ALL RENDERING COMPLETE
-	ProcessBarrier->wait();
+	FrameEndBarrier->wait();
 
 }
 
@@ -191,13 +205,13 @@ void BattleScene::Render(sf::RenderWindow & window)
 	}
 
 	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
-	ProcessBarrier->wait();
+	RenderBarrier->wait();
 
 	// Render all the processed Projectiles
 	spriteRenderer_->RenderFrame(window);
 
 	// END OF FRAME ALL RENDERING COMPLETE
-	ProcessBarrier->wait();
+	FrameEndBarrier->wait();
 
 }
 
@@ -285,12 +299,12 @@ void BattleScene::ProcessUnits()
 		projectiles_->Update(delta_time, *spriteRenderer_);
 
 		// ALL PROCESSING COMPLETE
-		ProcessBarrier->wait();
+		RenderBarrier->wait();
 
 		// RENDERING TO THE SCREEN
 
 		// END OF FRAME ALL RENDERING COMPLETE
-		ProcessBarrier->wait();
+		FrameEndBarrier->wait();
 
 	}
 

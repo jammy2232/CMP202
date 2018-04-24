@@ -34,7 +34,7 @@ void Fight::Step(GameWorld& world, float dt)
 	}
 
 	// Check the enemy is still valid
-	if (!world.CheckForUnit(unit_.GetTargetLocation()) || world.GetUnitTeam(unit_.GetTargetLocation()) == unit_.GetTeam())
+	if (!world.CheckForUnit(unit_.GetTargetLocation()) || world.GetUnitTeam(unit_.GetTargetLocation()) == world.GetUnitTeam(unit_.GetCurrentTile()))
 	{
 
 		// The enemy unit is gone

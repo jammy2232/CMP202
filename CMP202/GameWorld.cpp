@@ -124,6 +124,8 @@ void GameWorld::FreeUnitFromTile(sf::Vector2i tile)
 	// Remove the unit
 	unitMap_[tile.y * mapDimension_ + tile.x] = nullptr;
 
+	assert(unitMap_[tile.y * mapDimension_ + tile.x] == nullptr);
+
 }
 
 

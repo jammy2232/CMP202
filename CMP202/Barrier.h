@@ -1,6 +1,7 @@
 #pragma once
 
 #include <condition_variable>
+#include <atomic>
 #include <mutex>
 
 class Barrier
@@ -23,13 +24,15 @@ public:
 		// Check if the barrier needs unlocked
 		if (thread_counter_ == 0)
 		{
-			cv.notify_all();
+
 			thread_counter_ = threads_;
+			cv.notify_all();
+
 		}
 		else
-		{
+		{ 
 			// Otherwise threads need to wait
-			cv.wait(lock);
+			cv.wait(lock, [=] { return thread_counter_ == threads_; });
 		}
 
 	}
@@ -39,7 +42,7 @@ private:
 	// Variables 
 	std::condition_variable cv;
 	std::mutex barrier_lock_;
-	int thread_counter_;
+	std::atomic<int> thread_counter_;
 	int threads_;
 
 };

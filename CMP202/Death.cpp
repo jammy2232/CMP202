@@ -9,10 +9,10 @@ Death::~Death()
 void Death::Enter(GameWorld& world)
 {
 
-	unit_.SetSpriteId(102); // Change Sprite
-
 	// Remove yourself from the board
 	world.FreeUnitFromTile(unit_.GetCurrentTile());
+
+	unit_.SetSpriteId(102); // Change Sprite
 
 }
 
@@ -24,7 +24,7 @@ void Death::Step(GameWorld& world, float dt)
 	timer_ += dt;
 
 	// Take action 
-	if (timer_ > 10.0f)
+	if (timer_ > 0.5f)
 	{
 
 		unit_.setActive(false);

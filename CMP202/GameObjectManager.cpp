@@ -80,7 +80,6 @@ void GameObjectManager::CreateTaskList()
 
 			if (object->isDeleted())
 			{
-
 				// add this free slot to the free slots
 				freeSlots_.push(indexTracker);
 

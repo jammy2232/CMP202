@@ -23,6 +23,8 @@
 #include "GameObjectManager.h"
 #include "PathFinder.h"
 
+#include "DataLogger.h"
+
 class PathFinder;
 class Projectile;
 
@@ -81,6 +83,8 @@ private:
 
 	// Render Barrier
 	Barrier* ProcessBarrier;
+	Barrier* RenderBarrier;
+	Barrier* FrameEndBarrier;
 
 	// Static reference for spawning objects
 	static BattleScene* instance_;

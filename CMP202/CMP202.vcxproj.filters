@@ -91,7 +91,7 @@
       <Filter>Source Files\AIUnits</Filter>
     </ClCompile>
     <ClCompile Include="DataLogger.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +140,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="GameManager.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
@@ -153,6 +150,9 @@
       <Filter>Header Files\AIUnits</Filter>
     </ClInclude>
     <ClInclude Include="DataLogger.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
