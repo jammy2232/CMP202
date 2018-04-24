@@ -4,8 +4,8 @@
 #define TILESIZE 128.0f
 
 // Battle Information
-#define MAXUNITS 2500
-#define MAPSIZE 60
+#define MAXUNITS 5000
+#define MAPSIZE 100
 #define DISPLAYMINIMAP true
 
 // Unit Setting
@@ -16,5 +16,5 @@
 
 // Thread Settings
 #define PATHFINDINGTHEADS 10
-#define PROCESSINGTHEADS 1
+#define PROCESSINGTHEADS 20
 #define FORCESINGLETHREAD false

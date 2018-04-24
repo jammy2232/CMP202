@@ -138,25 +138,25 @@ void BattleScene::HandleInput(float delta_time)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(-300.0f * delta_time * moveMod, 0.0f);
+		main_view.move(-300.0f * delta_time * std::abs(moveMod), 0.0f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(300.0f * delta_time * moveMod, 0.0f);
+		main_view.move(300.0f * delta_time * std::abs(moveMod), 0.0f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(0.0f, -300.0f * delta_time * moveMod);
+		main_view.move(0.0f, -300.0f * delta_time * std::abs(moveMod));
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(0.0f, 300.0f * delta_time * moveMod);
+		main_view.move(0.0f, 300.0f * delta_time * std::abs(moveMod));
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
@@ -185,7 +185,7 @@ void BattleScene::Update(float dt)
 	delta_time = dt;
 
 	// Store the frame rate counter
-	DataLogger::LogValue("FPS", 1 / delta_time);
+	DataLogger::LogValue("FPS", 1.0f / dt);
 
 	// Create the work lists
 	units_->CreateTaskList();
