@@ -23,5 +23,9 @@ protected:
 	sf::View main_view;
 	sf::View miniMap_View;
 
+	// View modification 
+	float zoom = 1.1f;
+	float moveMod = 1.0f;
+
 };
 

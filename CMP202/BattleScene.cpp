@@ -138,25 +138,41 @@ void BattleScene::HandleInput(float delta_time)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(-300.0f * delta_time, 0.0f);
+		main_view.move(-300.0f * delta_time * moveMod, 0.0f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(300.0f * delta_time, 0.0f);
+		main_view.move(300.0f * delta_time * moveMod, 0.0f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(0.0f, -300.0f * delta_time);
+		main_view.move(0.0f, -300.0f * delta_time * moveMod);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
-		main_view.move(0.0f, 300.0f * delta_time);
+		main_view.move(0.0f, 300.0f * delta_time * moveMod);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	{
+		std::unique_lock<std::mutex> lock(windowEditor_);
+		sf::Vector2f size = main_view.getSize();
+		main_view.setSize(size + (size * zoom * delta_time));
+		moveMod += 0.1f;
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+	{
+		std::unique_lock<std::mutex> lock(windowEditor_);
+		sf::Vector2f size = main_view.getSize();
+		main_view.setSize(size - (size * zoom * delta_time));
+		moveMod -= 0.1f;
 	}
 
 }
@@ -210,8 +226,7 @@ void BattleScene::Render(sf::RenderWindow & window)
 	// Render all the processed Projectiles
 	spriteRenderer_->RenderFrame(window);
 
-	// END OF FRAME ALL RENDERING COMPLETE
-	FrameEndBarrier->wait();
+	// Frame end after UI
 
 }
 
@@ -219,33 +234,17 @@ void BattleScene::Render(sf::RenderWindow & window)
 void BattleScene::RenderUI(sf::RenderWindow & window)
 {
 
-	/*
-
-	//Minimap render function ***********************
+	// Main Render Function **********************
 	{
 		std::unique_lock<std::mutex> lock(windowEditor_);
 		window.setView(miniMap_View);
 	}
 
-	// Render Tiles 
-	{
-		std::unique_lock<std::mutex> lock(windowEditor_);
-		for (int tile = 0; tile < tileMapRenderer->getNumberOfEntities(); tile++)
-		{
-			window.draw(tileMapRenderer->RenderSprite(tile));
-		}
-	}
+	// Queue the world to be rendered
+	world_->GenerateMap(*spriteRenderer_);
 
-	// Render Units
-	/*
-	{
-		std::unique_lock<std::mutex> lock(windowEditor_);
-		for (int unit = 0; unit < unitRenderer->getNumberOfEntities(); unit++)
-		{
-			window.draw(unitRenderer->RenderSprite(unit));
-		}
-	}
-	
+	// Render all the processed Projectiles
+	spriteRenderer_->RenderFrame(window);
 
 	// Render the borders fro the minimap
 	{
@@ -256,10 +255,10 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 
 		// This is the fixed tile size of the ground tiles
 		const int tilesize = TILESIZE;
-		int viewsize = tilesize * mapDimension;
+		int viewsize = tilesize * world_->GetMapDimension();
 
 		// Create the current camera position outline
-		sf::RectangleShape outline(sf::Vector2f(currentResolution.width, currentResolution.height));
+		sf::RectangleShape outline(main_view.getSize());
 		outline.setOrigin(currentResolution.width / 2.0f, currentResolution.height / 2.0f);
 		outline.setOutlineThickness(20.0f);
 		outline.setFillColor(sf::Color::Transparent);
@@ -280,7 +279,8 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 
 	}
 
-	*/
+	// END OF FRAME ALL RENDERING COMPLETE
+	FrameEndBarrier->wait();
 
 }
 
@@ -326,9 +326,8 @@ void BattleScene::SetUpViewWindows()
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
 	// Main
-	main_view.setSize(currentResolution.width * 5, currentResolution.height * 5);
+	main_view.setSize(currentResolution.width, currentResolution.height);
 	main_view.setCenter(TILESIZE * world_->GetMapDimension()/ 2.0f, TILESIZE * world_->GetMapDimension() / 2.0f);
-	// main_view.setCenter(currentResolution.width / 2.0f, currentResolution.height / 2.0f);
 	main_view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 
 	// MiniMap
