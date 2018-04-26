@@ -8,13 +8,15 @@
 
 // Application includes
 #include "GameManager.h"
+#include "time.h"
 
 // Std thread includes
 #include <thread>
 #include <memory>
 
-// data logger 
+// Data logging for benchmarking ***********************************
 #include "DataLogger.h"
+// *****************************************************************
 
 
 // Main Thread handling game system updates
@@ -22,7 +24,9 @@ int main()
 {
 
 	// Create a new system for data logging
-	DataLogger logger("GameData.csv");
+	// Data logging for benchmarking ***********************************
+	DataLogger logger("GameData.txt"); 
+	// *****************************************************************
 
 	// Seed the random number generator
 	srand(time(NULL));
@@ -86,6 +90,9 @@ int main()
 		if (!gameApplication->Update(deltaTime))
 		{
 
+			// output the game performance information
+			logger.WriteValues();
+
 			// Cleanup the application
 			gameApplication->CleanUp();
 
@@ -95,6 +102,9 @@ int main()
 		}
 
 	}
+
+	// output the game performance information
+	logger.WriteValues();
 
 	// Cleanup the application
 	gameApplication->CleanUp();

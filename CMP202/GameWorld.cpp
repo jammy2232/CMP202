@@ -184,7 +184,7 @@ void GameWorld::GenerateRandomWolrd()
 	// Add random trees and foliage on Per% of the map
 
 	// Calculate the number of foliage
-	int treeNumbers = mapDimension_ * mapDimension_ * 0.1f; // 10%
+	int treeNumbers = (int)(mapDimension_ * mapDimension_ * 0.1f); // 10%
 
 	// Randomly assigne these to locations
 	for (int i = 0; i < treeNumbers; i++)
@@ -207,10 +207,10 @@ void GameWorld::GenerateRandomWolrd()
 	// Add a river down the middle with a crossing point
 
 	// Go through the map and add the river ect
-	for (int y = 0; y < (mapDimension_); y++)
+	for (unsigned int y = 0; y < (mapDimension_); y++)
 	{
 
-		for (int x = 0; x < (mapDimension_); x++)
+		for (unsigned int x = 0; x < (mapDimension_); x++)
 		{
 
 			// Check if you create Sand

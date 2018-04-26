@@ -185,19 +185,45 @@ void BattleScene::Update(float dt)
 	delta_time = dt;
 
 	// Store the frame rate counter
-	DataLogger::LogValue("FPS", 1.0f / dt);
+	// Data logging for benchmarking ***********************************
+	DataLogger::LogValue("DT", dt);
+	// *****************************************************************
+
+	// Time the task list
+	the_clock::time_point start = the_clock::now();
 
 	// Create the work lists
 	units_->CreateTaskList();
 	projectiles_->CreateTaskList();
+
+	// Time the task list
+	the_clock::time_point end = the_clock::now();
+
+	// Log the time
+	auto time_taken = duration_cast<milliseconds>(end - start).count();
+	DataLogger::LogValue("TaskList", time_taken);
+
+	// Log the unit and projectile numbers
+	DataLogger::LogValue("UnitCount", (float)units_->GetQueueSize());
+	DataLogger::LogValue("ProjectileCount", (float)projectiles_->GetQueueSize());
 
 	// wait till all the threads have completed before flagging update complete
 
 	// WAIT FOR DT TO BE SET
 	ProcessBarrier->wait();
 
+	// Time the unit processing
+	start = the_clock::now();
+
 	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
 	RenderBarrier->wait();
+
+	// Time the task list
+	end = the_clock::now();
+
+	// Log the time
+	time_taken = duration_cast<milliseconds>(end - start).count();
+	DataLogger::LogValue("ObjectProcessing", time_taken);
 
 	// END OF FRAME ALL RENDERING COMPLETE
 	FrameEndBarrier->wait();
@@ -208,8 +234,19 @@ void BattleScene::Update(float dt)
 void BattleScene::Render(sf::RenderWindow & window)
 {
 
+	// Time the task list
+	the_clock::time_point start = the_clock::now();
+
 	// Queue the world to be rendered
 	world_->GenerateMap(*spriteRenderer_);
+
+	// Time the task list
+	the_clock::time_point end = the_clock::now();
+
+	// Log the time
+	auto time_taken = duration_cast<milliseconds>(end - start).count();
+	DataLogger::LogValue("WorldPrepare", time_taken);
+
 
 	// WAIT FOR DT TO BE SET
 	ProcessBarrier->wait();
@@ -223,8 +260,18 @@ void BattleScene::Render(sf::RenderWindow & window)
 	// ALL UNIT/PROJECTILE PROCESSING COMPLETE
 	RenderBarrier->wait();
 
+	// Time the task list
+	start = the_clock::now();
+
 	// Render all the processed Projectiles
 	spriteRenderer_->RenderFrame(window);
+
+	// Time the task list
+	end = the_clock::now();
+
+	// Log the time
+	time_taken = duration_cast<milliseconds>(end - start).count();
+	DataLogger::LogValue("RenderTime", time_taken);
 
 	// Frame end after UI
 
@@ -254,8 +301,8 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 		sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
 		// This is the fixed tile size of the ground tiles
-		const int tilesize = TILESIZE;
-		int viewsize = tilesize * world_->GetMapDimension();
+		const float tilesize = TILESIZE;
+		int viewsize = (int)tilesize * world_->GetMapDimension();
 
 		// Create the current camera position outline
 		sf::RectangleShape outline(main_view.getSize());
@@ -268,7 +315,7 @@ void BattleScene::RenderUI(sf::RenderWindow & window)
 		window.draw(outline);
 
 		// Create the border around the minimap
-		sf::RectangleShape map_outline(sf::Vector2f(viewsize, viewsize));
+		sf::RectangleShape map_outline(sf::Vector2f((float)viewsize, (float)viewsize));
 		map_outline.setOrigin(viewsize / 2.0f, viewsize / 2.0f);
 		map_outline.setOutlineThickness(-128.0);
 		map_outline.setFillColor(sf::Color::Transparent);
@@ -326,20 +373,19 @@ void BattleScene::SetUpViewWindows()
 	sf::VideoMode currentResolution = sf::VideoMode::getDesktopMode();
 
 	// Main
-	main_view.setSize(currentResolution.width, currentResolution.height);
+	main_view.setSize((float)currentResolution.width, (float)currentResolution.height);
 	main_view.setCenter(TILESIZE * world_->GetMapDimension()/ 2.0f, TILESIZE * world_->GetMapDimension() / 2.0f);
 	main_view.setViewport(sf::FloatRect(0.0f, 0.0f, 1.0f, 1.0f));
 
 	// MiniMap
 
 	// This is the fixed tile size of the ground tiles
-	const int tilesize = TILESIZE;
 	const int mapSize_dimensions = world_->GetMapDimension();
-	int viewsize = tilesize * (mapSize_dimensions + 2); // 2 accounts for the border
+	int viewsize = (int)TILESIZE * (mapSize_dimensions + 2); // 2 accounts for the border
 
 	// restict the view port to the bottom left of the screen with a border
-	miniMap_View.setSize(viewsize, viewsize);
-	miniMap_View.setCenter(viewsize / 2.0f, viewsize / 2.0f);
-	miniMap_View.setViewport(sf::FloatRect(0.74, 0.74, 0.24, 0.24));
+	miniMap_View.setSize((float)viewsize, (float)viewsize);
+	miniMap_View.setCenter((float)viewsize / 2.0f, (float)viewsize / 2.0f);
+	miniMap_View.setViewport(sf::FloatRect(0.74f, 0.74f, 0.24f, 0.24f));
 
 }

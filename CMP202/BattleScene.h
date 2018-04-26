@@ -23,7 +23,17 @@
 #include "GameObjectManager.h"
 #include "PathFinder.h"
 
+// Data logging for benchmarking ***********************************
+
 #include "DataLogger.h"
+#include <chrono>
+
+typedef std::chrono::steady_clock the_clock;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+
+// *****************************************************************
+
 
 class PathFinder;
 class Projectile;

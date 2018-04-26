@@ -14,6 +14,7 @@
 #include "Unit.h"
 #include "Semaphor.h"
 #include "GameSettings.h"
+#include "DataLogger.h"
 
 // Forward declaration
 struct Cell;

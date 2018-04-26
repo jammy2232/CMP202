@@ -85,6 +85,9 @@ void PathFinder::RequestPath(Unit* unit, sf::Vector2i start, sf::Vector2i destin
 	// Lock the queue (as more than one pathfinding worker thread can exist)
 	std::unique_lock<std::mutex> lock(queue);
 
+	// Log the unit that made the request
+	DataLogger::LogValue("unitPathRequestMade", unit);
+
 	// create a new task 
 	Task request;
 	request.unit = unit;
@@ -360,6 +363,10 @@ Task PathFinder::GetTask()
 
 	std::unique_lock<std::mutex> lock(queue);
 	Task newTask = taskQueue_.front();
+
+	// Log the unit that made the request
+	DataLogger::LogValue("unitPathRequestProcessed", newTask.unit);
+
 	taskQueue_.pop();
 	return newTask;
 

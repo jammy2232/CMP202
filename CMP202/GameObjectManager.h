@@ -6,6 +6,7 @@
 
 // System Includes
 #include "SpriteRenderer.h"
+#include "DataLogger.h"
 
 // std includes
 #include <vector>
@@ -29,6 +30,9 @@ public:
 
 	// Spawn a new Unit
 	bool AddObject(GameObject* newObject);
+
+	// Debig
+	int GetQueueSize() { return objectsToProcess_.size(); }
 
 private:
 

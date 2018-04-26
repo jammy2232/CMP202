@@ -7,6 +7,8 @@
 #include <fstream>
 #include <chrono>
 
+class Unit;
+
 class DataLogger
 {
 public:
@@ -15,6 +17,9 @@ public:
 	~DataLogger();
 
 	static void LogValue(std::string Type, float value);
+	static void LogValue(std::string Type, long long value);
+	static void LogValue(std::string Type, Unit* value);
+	void WriteValues();
 
 private:
 
@@ -22,7 +27,10 @@ private:
 	static DataLogger* instance_;
 
 	// Storage system for the datalogger
-	std::map<std::string, std::list<float>> data_;
+	std::map<std::string, std::list<Unit*>> data_unit_;
+	std::map<std::string, std::list<float>> data_f_;
+	std::map<std::string, std::list<long long>> data_ll_;
+	std::map<std::string, std::list<long long>> TimeStamps_;
 
 	// Reference to the output file 
 	std::ofstream file;

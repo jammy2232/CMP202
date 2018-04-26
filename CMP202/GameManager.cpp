@@ -90,7 +90,7 @@ void GameManager::Render(sf::RenderWindow* window)
 	{
 
 		// Clear the current window
-		window->clear(sf::Color(0.0f, 0.0f, 0.0f, 0.0f));
+		window->clear(sf::Color(0, 0, 0, 0));
 
 		// Lock the render access
 		std::unique_lock<std::mutex> lock(sceneAccessRender);
