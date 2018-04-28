@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <fstream>
 #include <chrono>
+#include <mutex>
 
 class Unit;
 
@@ -41,6 +42,9 @@ private:
 
 	// Timestamp info
 	std::chrono::steady_clock::time_point start;
+
+	// Mutext the data logging
+	std::mutex lock_;
 	
 };
 

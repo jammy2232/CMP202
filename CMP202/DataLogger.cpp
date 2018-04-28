@@ -25,7 +25,6 @@ DataLogger::DataLogger(std::string filename) : name(filename)
 DataLogger::~DataLogger()
 {
 
-	delete instance_;
 	instance_ = nullptr;
 
 }
@@ -33,6 +32,9 @@ DataLogger::~DataLogger()
 
 void DataLogger::LogValue(std::string Type, float value)
 {
+
+	// Mutex lock the data logger
+	std::unique_lock<std::mutex> lock(instance_->lock_);
 
 	// if no datalogger exists just return
 	if (!instance_)
@@ -56,6 +58,9 @@ void DataLogger::LogValue(std::string Type, float value)
 void DataLogger::LogValue(std::string Type, long long value)
 {
 
+	// Mutex lock the data logger
+	std::unique_lock<std::mutex> lock(instance_->lock_);
+
 	// if no datalogger exists just return
 	if (!instance_)
 		return;
@@ -77,6 +82,9 @@ void DataLogger::LogValue(std::string Type, long long value)
 
 void DataLogger::LogValue(std::string Type, Unit * value)
 {
+
+	// Mutex lock the data logger
+	std::unique_lock<std::mutex> lock(instance_->lock_);
 
 	// if no datalogger exists just return
 	if (!instance_)
@@ -120,9 +128,8 @@ void DataLogger::OutputDataToFile()
 
 	// Log the critcal information corresponding to the applicaiton
 	file << "MAXUNITS, " << MAXUNITS << '\n';
-	file << "MAXPROJECTILES, " << MAPSIZE*2 << '\n';
 	file << "MAPSIZE, " << MAPSIZE << '\n';
-	file << "PATHFINDINGTHEADS, " << PATHFINDINGTHEADS * 2 << '\n';
+	file << "PATHFINDINGTHEADS, " << PATHFINDINGTHEADS << '\n';
 	file << "PROCESSINGTHEADS, " << PROCESSINGTHEADS << '\n';
 
 	// For each of the entries in the data logger output the informaiton
