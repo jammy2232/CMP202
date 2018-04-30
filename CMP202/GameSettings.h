@@ -4,8 +4,8 @@
 #define TILESIZE 128.0f
 
 // Battle Information
-#define MAXUNITS 80000
-#define MAPSIZE 500
+#define MAXUNITS 10000
+#define MAPSIZE 150
 
 // Unit Setting
 #define UNITSPEED 60.0f
